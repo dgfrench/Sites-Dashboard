@@ -108,6 +108,23 @@
   .mini-bar-track{width:100%;height:4px;background:var(--bg2);border-radius:2px;overflow:hidden;margin-top:4px;}
   .mini-bar-fill{height:100%;border-radius:2px;background:var(--t3);opacity:.5;transition:width .6s ease;}
 
+
+  /* Traffic page */
+  .site-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+  .site-tab{font-size:11px;padding:5px 12px;border-radius:var(--r-md);border:.5px solid var(--border);cursor:pointer;color:var(--t2);background:transparent;font-family:var(--font);transition:all .12s;display:flex;align-items:center;gap:6px;}
+  .site-tab:hover{background:var(--bg2);color:var(--t1);}
+  .site-tab.active{background:var(--t1);color:var(--bg1);border-color:var(--t1);font-weight:500;}
+  .site-tab .dot{width:6px;height:6px;}
+  .pages-table{width:100%;border-collapse:collapse;font-size:12px;}
+  .pages-table th{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;padding:0 12px 8px 0;text-align:left;border-bottom:.5px solid var(--border);}
+  .pages-table td{padding:9px 12px 9px 0;border-bottom:.5px solid var(--border);font-variant-numeric:tabular-nums;vertical-align:middle;}
+  .pages-table tr:last-child td{border-bottom:none;}
+  .pages-table tr:hover td{background:var(--bg2);}
+  .page-url{font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px;display:block;}
+  .source-bar{height:6px;border-radius:3px;background:var(--blue);opacity:.7;}
+  .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}
+  .loading-pulse{animation:pulse 1.5s ease-in-out infinite;background:var(--bg2);border-radius:4px;height:14px;display:inline-block;}
+
   /* Charts */
   .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
   .chart-area{height:150px;background:var(--bg2);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;overflow:hidden;}
@@ -156,7 +173,7 @@
   <div class="nav-section">
     <div class="nav-label">Overview</div>
     <div class="nav-item active" data-page="overview"><i class="ti ti-layout-dashboard"></i><span class="nav-name">Overview</span></div>
-    <div class="nav-item" data-page="overview"><i class="ti ti-chart-line"></i><span class="nav-name">Traffic</span></div>
+    <div class="nav-item" data-page="traffic"><i class="ti ti-chart-line"></i><span class="nav-name">Traffic & Content</span></div>
     <div class="nav-item" data-page="seo"><i class="ti ti-search"></i><span class="nav-name">SEO rankings</span></div>
   </div>
   <div class="nav-section">
@@ -252,9 +269,6 @@
             <td class="td-num" id="auto-amz-revenue">—</td>
             <td class="td-num" id="auto-amz-earnings">—</td>
             <td class="td-num" id="auto-amz-conv">—</td>
-            <td class="td-num" id="auto-seo-clicks">—</td>
-            <td class="td-num" id="auto-seo-imp">—</td>
-            <td class="td-num" id="auto-seo-pos">—</td>
             <td><span class="badge badge-live" id="status-auto">Live</span></td>
           </tr>
           <tr>
@@ -266,9 +280,6 @@
             <td class="td-num" id="joey-amz-revenue">—</td>
             <td class="td-num" id="joey-amz-earnings">—</td>
             <td class="td-num" id="joey-amz-conv">—</td>
-            <td class="td-num" id="joey-seo-clicks">—</td>
-            <td class="td-num" id="joey-seo-imp">—</td>
-            <td class="td-num" id="joey-seo-pos">—</td>
             <td><span class="badge badge-live" id="status-joey">Live</span></td>
           </tr>
           <tr>
@@ -280,9 +291,6 @@
             <td class="td-num" id="tcg-amz-revenue">—</td>
             <td class="td-num" id="tcg-amz-earnings">—</td>
             <td class="td-num" id="tcg-amz-conv">—</td>
-            <td class="td-num" id="tcg-seo-clicks">—</td>
-            <td class="td-num" id="tcg-seo-imp">—</td>
-            <td class="td-num" id="tcg-seo-pos">—</td>
             <td><span class="badge badge-live" id="status-tcg">Live</span></td>
           </tr>
           <tr>
@@ -294,9 +302,6 @@
             <td class="td-num" id="ark-amz-revenue">—</td>
             <td class="td-num" id="ark-amz-earnings">—</td>
             <td class="td-num" id="ark-amz-conv">—</td>
-            <td class="td-num" id="ark-seo-clicks">—</td>
-            <td class="td-num" id="ark-seo-imp">—</td>
-            <td class="td-num" id="ark-seo-pos">—</td>
             <td><span class="badge badge-live" id="status-ark">Live</span></td>
           </tr>
         </tbody>
@@ -318,6 +323,100 @@
 </div><!-- /page-overview -->
 
 
+
+
+<!-- ═══════════════════════════════════
+     PAGE: TRAFFIC & CONTENT
+═══════════════════════════════════ -->
+<div class="page" id="page-traffic">
+  <div class="topbar">
+    <span class="topbar-title">Traffic & Content Insights</span>
+    <div class="topbar-right">
+      <div class="date-pill"><i class="ti ti-calendar" style="font-size:13px"></i> Last 30 days</div>
+      <button class="btn" onclick="if(accessToken) loadTrafficPage(); else startAuth()"><i class="ti ti-refresh" style="font-size:13px"></i> Refresh</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- Site selector tabs -->
+    <div class="site-tabs" id="traffic-site-tabs">
+      <button class="site-tab active" data-site="0"><span class="dot dot-green"></span>AutomobileBrand</button>
+      <button class="site-tab" data-site="1"><span class="dot dot-green"></span>JoeysHairSalon</button>
+      <button class="site-tab" data-site="2"><span class="dot dot-green"></span>ThatComputerGirl</button>
+      <button class="site-tab" data-site="3"><span class="dot dot-green"></span>ArkLaTexRides</button>
+    </div>
+
+    <!-- Site summary strip -->
+    <div class="stat-grid" id="traffic-summary-cards" style="margin-bottom:14px">
+      <div class="stat-card"><div class="stat-label"><i class="ti ti-users" style="font-size:12px"></i> Visitors</div><div class="stat-value" id="ts-visitors" style="font-size:20px">—</div></div>
+      <div class="stat-card"><div class="stat-label"><i class="ti ti-file-text" style="font-size:12px"></i> Page views</div><div class="stat-value" id="ts-pageviews" style="font-size:20px">—</div></div>
+      <div class="stat-card"><div class="stat-label"><i class="ti ti-clock" style="font-size:12px"></i> Avg session</div><div class="stat-value" id="ts-duration" style="font-size:20px">—</div></div>
+      <div class="stat-card"><div class="stat-label"><i class="ti ti-trending-up" style="font-size:12px"></i> vs prior period</div><div class="stat-value delta-up" id="ts-delta" style="font-size:18px">—</div></div>
+    </div>
+
+    <div class="three-col">
+
+      <!-- Top pages -->
+      <div class="card" style="margin-bottom:0;grid-column:span 2">
+        <div class="card-header">
+          <div><div class="card-title">Top pages by traffic</div><div class="card-sub" id="top-pages-sub">Last 30 days</div></div>
+          <span class="card-tag">GA4</span>
+        </div>
+        <div id="top-pages-container">
+          <table class="pages-table">
+            <thead><tr>
+              <th style="width:45%">Page</th>
+              <th style="width:13%">Views</th>
+              <th style="width:13%">Visitors</th>
+              <th style="width:13%">Avg time</th>
+              <th style="width:16%">Views bar</th>
+            </tr></thead>
+            <tbody id="top-pages-body">
+              <tr><td colspan="5" style="text-align:center;color:var(--t3);padding:20px">Sign in to load</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Traffic sources -->
+      <div class="card" style="margin-bottom:0">
+        <div class="card-header">
+          <div><div class="card-title">Traffic sources</div><div class="card-sub">Where visitors come from</div></div>
+        </div>
+        <div id="traffic-sources-container">
+          <div style="text-align:center;color:var(--t3);padding:20px;font-size:12px">Sign in to load</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="height:12px"></div>
+
+    <!-- Top converting pages (most engaged) -->
+    <div class="card" style="margin-bottom:0">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Best performing content</div>
+          <div class="card-sub">Highest engagement time — these pages keep visitors reading (most likely to convert to Amazon clicks)</div>
+        </div>
+        <span class="card-tag">Top 10</span>
+      </div>
+      <table class="pages-table">
+        <thead><tr>
+          <th style="width:40%">Page</th>
+          <th style="width:12%">Views</th>
+          <th style="width:14%">Avg eng. time</th>
+          <th style="width:12%">Visitors</th>
+          <th style="width:22%">Engagement bar</th>
+        </tr></thead>
+        <tbody id="top-engaging-body">
+          <tr><td colspan="5" style="text-align:center;color:var(--t3);padding:20px">Sign in to load</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div><!-- /page-traffic -->
 
 <!-- ═══════════════════════════════════
      PAGE 3: SEO / SEARCH CONSOLE
@@ -448,6 +547,8 @@ function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === id));
+  if(id === 'traffic' && accessToken && !trafficCache[activeSiteIdx]) loadTrafficPage();
+  if(id === 'seo' && accessToken) loadGSC();
 }
 document.querySelectorAll('.nav-item').forEach(n => n.addEventListener('click', () => showPage(n.dataset.page)));
 
@@ -535,9 +636,11 @@ async function loadGA(){
       if(se){se.textContent='No data';se.className='badge badge-warn';}
     }
   });
-  const gs=document.getElementById('ga-status'); if(gs) gs.textContent=`Live data from ${n} GA4 properties`;
+  const validN=results.filter(Boolean).length;
+  const gs=document.getElementById('ga-status'); if(gs) gs.textContent=`Live data from ${validN} GA4 properties`;
   drawTrafficChart(results);
   loadGSC();
+  if(document.getElementById("page-traffic").classList.contains("active")) loadTrafficPage();
 }
 
 function drawTrafficChart(results){
@@ -642,6 +745,155 @@ function renderGSCSiteCards(results) {
       </div>
     </div>`;
   }).join('');
+}
+
+
+// ── Traffic & Content Page ────────────────────────────────────────────────
+let trafficCache = {};
+let activeSiteIdx = 0;
+
+document.querySelectorAll('.site-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.site-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeSiteIdx = parseInt(tab.dataset.site);
+    renderTrafficPage(activeSiteIdx);
+  });
+});
+
+async function loadTrafficPage() {
+  const idx = activeSiteIdx;
+  const prop = PROPS[idx];
+  if (!prop) return;
+
+  // Show loading state
+  document.getElementById('top-pages-body').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--t3);padding:20px">Loading...</td></tr>';
+  document.getElementById('top-engaging-body').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--t3);padding:20px">Loading...</td></tr>';
+  document.getElementById('traffic-sources-container').innerHTML = '<div style="text-align:center;color:var(--t3);padding:20px;font-size:12px">Loading...</div>';
+
+  try {
+    // Fetch top pages by views
+    const [pagesData, sourcesData, engageData] = await Promise.all([
+      fetchGA4(prop.pid, {
+        dateRanges: [{startDate:'30daysAgo', endDate:'today'}],
+        dimensions: [{name:'pagePath'}],
+        metrics: [{name:'screenPageViews'},{name:'activeUsers'},{name:'averageSessionDuration'}],
+        orderBys: [{metric:{metricName:'screenPageViews'}, desc:true}],
+        limit: 10
+      }),
+      fetchGA4(prop.pid, {
+        dateRanges: [{startDate:'30daysAgo', endDate:'today'}],
+        dimensions: [{name:'sessionDefaultChannelGroup'}],
+        metrics: [{name:'activeUsers'}],
+        orderBys: [{metric:{metricName:'activeUsers'}, desc:true}],
+        limit: 8
+      }),
+      fetchGA4(prop.pid, {
+        dateRanges: [{startDate:'30daysAgo', endDate:'today'}],
+        dimensions: [{name:'pagePath'}],
+        metrics: [{name:'screenPageViews'},{name:'activeUsers'},{name:'userEngagementDuration'}],
+        orderBys: [{metric:{metricName:'userEngagementDuration'}, desc:true}],
+        limit: 10
+      })
+    ]);
+
+    trafficCache[idx] = { pagesData, sourcesData, engageData };
+    renderTrafficPage(idx);
+
+  } catch(e) {
+    console.error('Traffic page error:', e);
+    document.getElementById('top-pages-body').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--t3);padding:20px">Error loading data</td></tr>';
+  }
+}
+
+function renderTrafficPage(idx) {
+  const prop = PROPS[idx];
+  const cache = trafficCache[idx];
+
+  // Update summary cards from GA results we already have
+  const gaResult = trafficCache['ga_'+idx];
+
+  if (!cache) {
+    if (accessToken) loadTrafficPage();
+    return;
+  }
+
+  const { pagesData, sourcesData, engageData } = cache;
+
+  // Summary cards
+  const sumRows = pagesData.rows || [];
+  const totalViews = sumRows.reduce((a,r) => a + parseInt(r.metricValues[0].value), 0);
+  const totalUsers = sumRows.reduce((a,r) => a + parseInt(r.metricValues[1].value), 0);
+  const avgDur = sumRows.length ? sumRows.reduce((a,r) => a + parseFloat(r.metricValues[2].value), 0) / sumRows.length : 0;
+  document.getElementById('ts-visitors').textContent = fmt(totalUsers);
+  document.getElementById('ts-pageviews').textContent = fmt(totalViews);
+  document.getElementById('ts-duration').textContent = fmtD(avgDur);
+  document.getElementById('top-pages-sub').textContent = prop.name + ' — Last 30 days';
+
+  // Top pages table
+  const maxViews = Math.max(...(pagesData.rows||[]).map(r => parseInt(r.metricValues[0].value)), 1);
+  document.getElementById('top-pages-body').innerHTML = (pagesData.rows||[]).length
+    ? (pagesData.rows||[]).map(r => {
+        const path = r.dimensionValues[0].value;
+        const views = parseInt(r.metricValues[0].value);
+        const users = parseInt(r.metricValues[1].value);
+        const dur   = parseFloat(r.metricValues[2].value);
+        const barW  = Math.round((views/maxViews)*100);
+        const label = path === '/' ? '/ (homepage)' : path;
+        return `<tr>
+          <td><span class="page-url" title="${path}">${label}</span></td>
+          <td>${fmt(views)}</td>
+          <td>${fmt(users)}</td>
+          <td>${fmtD(dur)}</td>
+          <td><div class="source-bar" style="width:${barW}%;background:var(--blue)"></div></td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="5" style="text-align:center;color:var(--t3);padding:20px">No data for this site yet</td></tr>';
+
+  // Traffic sources
+  const srcColors = ['var(--green)','var(--blue)','var(--orange)','var(--purple)','var(--teal)','#E85D4A','#C084FC','#94A3B8'];
+  const srcRows = sourcesData.rows || [];
+  const maxSrc = Math.max(...srcRows.map(r => parseInt(r.metricValues[0].value)), 1);
+  const totalSrc = srcRows.reduce((a,r) => a + parseInt(r.metricValues[0].value), 0);
+  document.getElementById('traffic-sources-container').innerHTML = srcRows.length
+    ? srcRows.map((r, i) => {
+        const src = r.dimensionValues[0].value;
+        const users = parseInt(r.metricValues[0].value);
+        const pct = totalSrc ? Math.round((users/totalSrc)*100) : 0;
+        const barW = Math.round((users/maxSrc)*100);
+        return `<div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px">
+            <span style="color:var(--t2)">${src}</span>
+            <span style="color:var(--t3);font-variant-numeric:tabular-nums">${fmt(users)} · ${pct}%</span>
+          </div>
+          <div style="height:6px;background:var(--bg2);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${barW}%;background:${srcColors[i]||'var(--t3)'};border-radius:3px;opacity:.8"></div>
+          </div>
+        </div>`;
+      }).join('')
+    : '<div style="text-align:center;color:var(--t3);padding:20px;font-size:12px">No data yet</div>';
+
+  // Best performing content (by engagement time)
+  const engRows = engageData.rows || [];
+  const maxEng = Math.max(...engRows.map(r => parseFloat(r.metricValues[2].value)), 1);
+  document.getElementById('top-engaging-body').innerHTML = engRows.length
+    ? engRows.map(r => {
+        const path = r.dimensionValues[0].value;
+        const views = parseInt(r.metricValues[0].value);
+        const users = parseInt(r.metricValues[1].value);
+        const engTime = parseFloat(r.metricValues[2].value);
+        const avgEng = users > 0 ? engTime / users : 0;
+        const barW = Math.round((engTime/maxEng)*100);
+        const label = path === '/' ? '/ (homepage)' : path;
+        return `<tr>
+          <td><span class="page-url" title="${path}">${label}</span></td>
+          <td>${fmt(views)}</td>
+          <td style="color:var(--green-t);font-weight:500">${fmtD(avgEng)}</td>
+          <td>${fmt(users)}</td>
+          <td><div class="source-bar" style="width:${barW}%;background:var(--green)"></div></td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="5" style="text-align:center;color:var(--t3);padding:20px">No data yet</td></tr>';
 }
 
 // ── Amazon CSV ───────────────────────────────────────────────────────────────
