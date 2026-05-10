@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Analytics Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+  :root {
+    --bg1:#ffffff; --bg2:#f5f5f3; --bg3:#efefed;
+    --t1:#1a1a1a; --t2:#6b6b68; --t3:#9b9b97;
+    --border:rgba(0,0,0,0.1);
+    --font:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --mono:'SF Mono','Fira Code',monospace;
+    --r-md:8px; --r-lg:12px;
+    --orange:#FF9900;
+    --green:#639922; --green-bg:#EAF3DE; --green-t:#3B6D11;
+    --amber-bg:#FAEEDA; --amber-t:#854F0B;
+    --teal:#1D9E75; --blue:#185FA5; --purple:#8B5CF6;
+  }
+  @media(prefers-color-scheme:dark){
+    :root{
+      --bg1:#1c1c1a; --bg2:#252523; --bg3:#2c2c2a;
+      --t1:#f0f0ee; --t2:#9b9b97; --t3:#6b6b68;
+      --border:rgba(255,255,255,0.08);
+    }
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--font);background:var(--bg3);color:var(--t1);min-height:100vh;}
+  .shell{display:flex;height:100vh;}
+
+  /* Sidebar */
+  .sidebar{width:210px;flex-shrink:0;background:var(--bg1);border-right:.5px solid var(--border);display:flex;flex-direction:column;padding:20px 0;overflow-y:auto;}
+  .logo{padding:0 16px 20px;border-bottom:.5px solid var(--border);margin-bottom:8px;}
+  .logo span{font-size:14px;font-weight:500;}
+  .logo small{display:block;font-size:11px;color:var(--t3);margin-top:2px;}
+  .nav-section{padding:8px 0;}
+  .nav-label{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;padding:0 16px 6px;}
+  .nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:13px;color:var(--t2);cursor:pointer;border-left:2px solid transparent;transition:all .15s;user-select:none;}
+  .nav-item:hover{color:var(--t1);background:var(--bg2);}
+  .nav-item.active{color:var(--t1);border-left-color:var(--t1);background:var(--bg2);font-weight:500;}
+  .nav-item i{font-size:15px;flex-shrink:0;}
+  .nav-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;}
+  .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  .dot-green{background:var(--green);}
+  .dot-gray{background:var(--t3);opacity:.4;}
+
+  /* Main */
+  .main{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+  .page{display:none;flex-direction:column;flex:1;}
+  .page.active{display:flex;}
+  .topbar{background:var(--bg1);border-bottom:.5px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+  .topbar-title{font-size:15px;font-weight:500;}
+  .topbar-right{display:flex;align-items:center;gap:10px;}
+  .content{padding:20px 24px;flex:1;}
+
+  /* Buttons */
+  .btn{font-size:12px;color:var(--t2);background:transparent;border:.5px solid var(--border);border-radius:var(--r-md);padding:5px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:var(--font);transition:all .12s;}
+  .btn:hover{background:var(--bg2);color:var(--t1);}
+  .btn-primary{background:var(--t1);color:var(--bg1);border-color:var(--t1);}
+  .btn-primary:hover{opacity:.85;color:var(--bg1);}
+  .btn-orange{background:var(--orange);color:#111;border-color:var(--orange);font-weight:500;}
+  .btn-orange:hover{opacity:.88;color:#111;}
+  .date-pill{font-size:12px;color:var(--t2);background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r-md);padding:5px 10px;display:flex;align-items:center;gap:5px;}
+
+  /* Cards */
+  .card{background:var(--bg1);border:.5px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;margin-bottom:12px;}
+  .card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:8px;flex-wrap:wrap;}
+  .card-title{font-size:13px;font-weight:500;}
+  .card-sub{font-size:11px;color:var(--t3);margin-top:2px;}
+  .card-tag{font-size:11px;background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r-md);padding:3px 8px;color:var(--t2);white-space:nowrap;}
+  .section-heading{font-size:11px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+
+  /* Stat cards */
+  .stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:20px;}
+  .stat-card{background:var(--bg1);border:.5px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;}
+  .stat-label{font-size:11px;color:var(--t3);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+  .stat-value{font-size:22px;font-weight:500;line-height:1;margin-bottom:4px;}
+  .stat-delta{font-size:11px;display:flex;align-items:center;gap:3px;}
+  .delta-up{color:var(--green-t);}
+  .delta-down{color:#A32D2D;}
+  .delta-neutral{color:var(--t3);}
+  .sparkline{display:flex;align-items:flex-end;gap:2px;height:28px;margin-top:6px;}
+  .spark-bar{flex:1;border-radius:2px 2px 0 0;background:var(--t3);opacity:.3;}
+
+  /* Auth banner */
+  .auth-banner{background:var(--bg1);border:.5px solid var(--border);border-radius:var(--r-lg);padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .auth-banner.connected{border-color:#9FE1CB;background:#E1F5EE;}
+  .auth-info{display:flex;align-items:center;gap:12px;}
+  .auth-icon{width:36px;height:36px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .auth-icon.ok{background:#9FE1CB;}
+  .auth-text strong{font-size:13px;font-weight:500;display:block;}
+  .auth-text small{font-size:11px;color:var(--t2);}
+  .auth-banner.connected .auth-text small{color:#0F6E56;}
+
+  /* Sites table */
+  .sites-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;}
+  .sites-table th{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;padding:0 6px 8px 0;text-align:left;border-bottom:.5px solid var(--border);}
+  .sites-table td{padding:9px 6px 9px 0;border-bottom:.5px solid var(--border);vertical-align:middle;}
+  .sites-table tr:last-child td{border-bottom:none;}
+  .site-name{font-weight:500;font-size:12px;}
+  .site-url{font-size:10px;color:var(--t3);}
+  .tid{font-size:10px;color:var(--t3);font-family:var(--mono);margin-top:1px;}
+  .badge{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;display:inline-block;white-space:nowrap;}
+  .badge-live{background:var(--green-bg);color:var(--green-t);}
+  .badge-warn{background:var(--amber-bg);color:var(--amber-t);}
+  .td-num{font-variant-numeric:tabular-nums;font-size:12px;}
+  .mini-bar-track{width:100%;height:4px;background:var(--bg2);border-radius:2px;overflow:hidden;margin-top:4px;}
+  .mini-bar-fill{height:100%;border-radius:2px;background:var(--t3);opacity:.5;transition:width .6s ease;}
+
+  /* Charts */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+  .chart-area{height:150px;background:var(--bg2);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .ph-label{font-size:11px;color:var(--t3);display:flex;align-items:center;gap:5px;}
+
+  /* ── Amazon page ── */
+  .drop-zone{border:1.5px dashed var(--border);border-radius:var(--r-lg);padding:28px 24px;text-align:center;margin-bottom:16px;cursor:pointer;background:var(--bg1);transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .drop-zone:hover,.drop-zone.drag{border-color:var(--orange);background:rgba(255,153,0,.04);}
+  .drop-zone i{font-size:30px;color:var(--orange);}
+  .drop-zone strong{font-size:13px;}
+  .drop-zone small{font-size:11px;color:var(--t3);}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+  .chip{font-size:11px;background:var(--bg2);border:.5px solid var(--border);border-radius:20px;padding:3px 10px;display:flex;align-items:center;gap:5px;color:var(--t2);}
+  .chip-x{cursor:pointer;font-size:12px;color:var(--t3);}
+  .chip-x:hover{color:#A32D2D;}
+  .filter-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+  .ftab{font-size:11px;padding:4px 10px;border-radius:var(--r-md);border:.5px solid var(--border);cursor:pointer;color:var(--t2);background:transparent;font-family:var(--font);transition:all .12s;}
+  .ftab:hover{background:var(--bg2);color:var(--t1);}
+  .ftab.active{background:var(--orange);color:#111;border-color:var(--orange);font-weight:500;}
+  .amz-stat-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:18px;}
+  .amz-stat-card{background:var(--bg1);border:.5px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;}
+  .tag-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:12px;}
+  .tag-card{background:var(--bg1);border:.5px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;}
+  .tag-card-title{font-size:13px;font-weight:500;margin-bottom:2px;}
+  .tag-card-sub{font-size:10px;color:var(--t3);font-family:var(--mono);margin-bottom:12px;}
+  .tag-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .metric-label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;}
+  .metric-value{font-size:18px;font-weight:500;margin-top:2px;font-variant-numeric:tabular-nums;}
+  .hist-table{width:100%;border-collapse:collapse;font-size:12px;}
+  .hist-table th{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;padding:0 12px 8px 0;text-align:left;border-bottom:.5px solid var(--border);}
+  .hist-table td{padding:9px 12px 9px 0;border-bottom:.5px solid var(--border);font-variant-numeric:tabular-nums;}
+  .hist-table tr:last-child td{border-bottom:none;}
+  .hist-table tr:hover td{background:var(--bg2);}
+  .amz-bar{height:6px;border-radius:3px;background:var(--orange);opacity:.75;}
+  .empty{text-align:center;padding:48px 20px;color:var(--t3);}
+  .empty i{font-size:36px;margin-bottom:10px;display:block;opacity:.35;}
+  .empty p{font-size:13px;line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar">
+  <div class="logo"><span>My Dashboard</span><small>Analytics &amp; Affiliate</small></div>
+  <div class="nav-section">
+    <div class="nav-label">Overview</div>
+    <div class="nav-item active" data-page="overview"><i class="ti ti-layout-dashboard"></i><span class="nav-name">Overview</span></div>
+    <div class="nav-item" data-page="overview"><i class="ti ti-chart-line"></i><span class="nav-name">Traffic</span></div>
+    <div class="nav-item" data-page="seo"><i class="ti ti-search"></i><span class="nav-name">SEO rankings</span></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Sites</div>
+    <div class="nav-item" data-page="overview"><i class="ti ti-world"></i><span class="nav-name">AutomobileBrand</span><span class="dot dot-green" id="dot-auto"></span></div>
+    <div class="nav-item" data-page="overview"><i class="ti ti-world"></i><span class="nav-name">JoeysHairSalon</span><span class="dot dot-green" id="dot-joey"></span></div>
+    <div class="nav-item" data-page="overview"><i class="ti ti-world"></i><span class="nav-name">ThatComputerGirl</span><span class="dot dot-green" id="dot-tcg"></span></div>
+    <div class="nav-item" data-page="overview"><i class="ti ti-world"></i><span class="nav-name">ArkLaTexRides</span><span class="dot dot-gray" id="dot-ark"></span></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Amazon</div>
+    <div class="nav-item" data-page="amazon"><i class="ti ti-brand-amazon"></i><span class="nav-name">Affiliate Deep Dive</span></div>
+    <div class="nav-item" data-page="amazon"><i class="ti ti-receipt"></i><span class="nav-name">Earnings History</span></div>
+  </div>
+</aside>
+
+<div class="main">
+
+<!-- ═══════════════════════════════════
+     PAGE 1: OVERVIEW
+═══════════════════════════════════ -->
+<div class="page active" id="page-overview">
+  <div class="topbar">
+    <span class="topbar-title">Overview</span>
+    <div class="topbar-right">
+      <div class="date-pill"><i class="ti ti-calendar" style="font-size:13px"></i> Last 30 days</div>
+      <button class="btn" onclick="refreshData()"><i class="ti ti-refresh" style="font-size:13px"></i> Refresh</button>
+      <button class="btn btn-primary" id="auth-btn" onclick="startAuth()"><i class="ti ti-brand-google" style="font-size:13px"></i> Sign in with Google</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <div class="auth-banner" id="auth-banner">
+      <div class="auth-info">
+        <div class="auth-icon"><i class="ti ti-lock" style="font-size:16px;color:var(--t3)"></i></div>
+        <div class="auth-text"><strong>Connect Google Analytics</strong><small>Sign in to load live data from your 4 GA4 properties</small></div>
+      </div>
+      <button class="btn btn-primary" onclick="startAuth()"><i class="ti ti-brand-google" style="font-size:13px"></i> Sign in with Google</button>
+    </div>
+
+    <div class="section-heading"><i class="ti ti-globe" style="font-size:12px"></i> All sites — last 30 days</div>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label"><i class="ti ti-users" style="font-size:12px"></i> Total visitors</div>
+        <div id="val-visitors" class="stat-value">—</div>
+        <div id="delta-visitors" class="stat-delta delta-neutral">— vs prior period</div>
+        <div class="sparkline"><div class="spark-bar" style="height:40%"></div><div class="spark-bar" style="height:55%"></div><div class="spark-bar" style="height:45%"></div><div class="spark-bar" style="height:70%"></div><div class="spark-bar" style="height:60%"></div><div class="spark-bar" style="height:80%"></div><div class="spark-bar" style="height:75%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="ti ti-file-text" style="font-size:12px"></i> Page views</div>
+        <div id="val-pageviews" class="stat-value">—</div>
+        <div id="delta-pageviews" class="stat-delta delta-neutral">— vs prior period</div>
+        <div class="sparkline"><div class="spark-bar" style="height:50%"></div><div class="spark-bar" style="height:60%"></div><div class="spark-bar" style="height:55%"></div><div class="spark-bar" style="height:65%"></div><div class="spark-bar" style="height:72%"></div><div class="spark-bar" style="height:68%"></div><div class="spark-bar" style="height:90%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="ti ti-cursor-text" style="font-size:12px"></i> Amzn clicks (all)</div>
+        <div id="val-amz-clicks" class="stat-value">—</div>
+        <div id="val-amz-clicks-sub" class="stat-delta delta-neutral" style="font-size:11px">Import CSV on Amazon page</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="ti ti-coins" style="font-size:12px"></i> Amzn earnings (all)</div>
+        <div id="val-amz-earnings" class="stat-value">—</div>
+        <div id="val-amz-earnings-sub" class="stat-delta delta-neutral" style="font-size:11px">Import CSV on Amazon page</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div><div class="card-title">Per-site breakdown</div><div class="card-sub">Traffic + Amazon affiliate data</div></div>
+        <span class="card-tag">4 of 4 connected</span>
+      </div>
+      <table class="sites-table">
+        <thead>
+          <tr>
+            <th style="width:20%">Site</th>
+            <th style="width:10%">Visitors</th>
+            <th style="width:10%">Page views</th>
+            <th style="width:9%">Bounce %</th>
+            <th style="width:10%">Amzn clicks</th>
+            <th style="width:11%">Revenue</th>
+            <th style="width:11%">Earnings</th>
+            <th style="width:9%">Conv %</th>
+            <th style="width:10%">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="site-name">AutomobileBrand.com</div><div class="site-url">GA4: 360584404</div><div class="tid">autobrand-20</div></td>
+            <td class="td-num" id="auto-visitors">—<div class="mini-bar-track"><div class="mini-bar-fill" style="width:0%"></div></div></td>
+            <td class="td-num" id="auto-pageviews">—</td>
+            <td class="td-num" id="auto-bounce">—</td>
+            <td class="td-num" id="auto-amz-clicks">—</td>
+            <td class="td-num" id="auto-amz-revenue">—</td>
+            <td class="td-num" id="auto-amz-earnings">—</td>
+            <td class="td-num" id="auto-amz-conv">—</td>
+            <td class="td-num" id="auto-seo-clicks">—</td>
+            <td class="td-num" id="auto-seo-imp">—</td>
+            <td class="td-num" id="auto-seo-pos">—</td>
+            <td><span class="badge badge-live" id="status-auto">Live</span></td>
+          </tr>
+          <tr>
+            <td><div class="site-name">JoeysHairSalon.com</div><div class="site-url">GA4: 364970541</div><div class="tid">salon0c7-20</div></td>
+            <td class="td-num" id="joey-visitors">—<div class="mini-bar-track"><div class="mini-bar-fill" style="width:0%"></div></div></td>
+            <td class="td-num" id="joey-pageviews">—</td>
+            <td class="td-num" id="joey-bounce">—</td>
+            <td class="td-num" id="joey-amz-clicks">—</td>
+            <td class="td-num" id="joey-amz-revenue">—</td>
+            <td class="td-num" id="joey-amz-earnings">—</td>
+            <td class="td-num" id="joey-amz-conv">—</td>
+            <td class="td-num" id="joey-seo-clicks">—</td>
+            <td class="td-num" id="joey-seo-imp">—</td>
+            <td class="td-num" id="joey-seo-pos">—</td>
+            <td><span class="badge badge-live" id="status-joey">Live</span></td>
+          </tr>
+          <tr>
+            <td><div class="site-name">ThatComputerGirl.com</div><div class="site-url">GA4: 415946790</div><div class="tid">thatcompute07-website-20</div></td>
+            <td class="td-num" id="tcg-visitors">—<div class="mini-bar-track"><div class="mini-bar-fill" style="width:0%"></div></div></td>
+            <td class="td-num" id="tcg-pageviews">—</td>
+            <td class="td-num" id="tcg-bounce">—</td>
+            <td class="td-num" id="tcg-amz-clicks">—</td>
+            <td class="td-num" id="tcg-amz-revenue">—</td>
+            <td class="td-num" id="tcg-amz-earnings">—</td>
+            <td class="td-num" id="tcg-amz-conv">—</td>
+            <td class="td-num" id="tcg-seo-clicks">—</td>
+            <td class="td-num" id="tcg-seo-imp">—</td>
+            <td class="td-num" id="tcg-seo-pos">—</td>
+            <td><span class="badge badge-live" id="status-tcg">Live</span></td>
+          </tr>
+          <tr>
+            <td><div class="site-name">ArkLaTexRides.com</div><div class="site-url">GA4: 536971967</div><div class="tid">altrides-website-20</div></td>
+            <td class="td-num" id="ark-visitors">—<div class="mini-bar-track"><div class="mini-bar-fill" style="width:0%"></div></div></td>
+            <td class="td-num" id="ark-pageviews">—</td>
+            <td class="td-num" id="ark-bounce">—</td>
+            <td class="td-num" id="ark-amz-clicks">—</td>
+            <td class="td-num" id="ark-amz-revenue">—</td>
+            <td class="td-num" id="ark-amz-earnings">—</td>
+            <td class="td-num" id="ark-amz-conv">—</td>
+            <td class="td-num" id="ark-seo-clicks">—</td>
+            <td class="td-num" id="ark-seo-imp">—</td>
+            <td class="td-num" id="ark-seo-pos">—</td>
+            <td><span class="badge badge-live" id="status-ark">Live</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="two-col">
+      <div class="card" style="margin-bottom:0">
+        <div class="card-header"><div><div class="card-title">Visitors by site</div><div class="card-sub">Last 30 days · GA4</div></div><span class="card-tag">GA4</span></div>
+        <div class="chart-area" id="traffic-chart"><span class="ph-label"><i class="ti ti-chart-bar" style="font-size:14px"></i> Sign in to load</span></div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="card-header"><div><div class="card-title">Earnings by tracking ID</div><div class="card-sub">From imported CSVs</div></div><span class="card-tag">CSV</span></div>
+        <div class="chart-area" id="amz-overview-chart"><span class="ph-label"><i class="ti ti-chart-bar" style="font-size:14px"></i> Import CSVs on Amazon page</span></div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /page-overview -->
+
+
+
+<!-- ═══════════════════════════════════
+     PAGE 3: SEO / SEARCH CONSOLE
+═══════════════════════════════════ -->
+<div class="page" id="page-seo">
+  <div class="topbar">
+    <span class="topbar-title">SEO — Google Search Console</span>
+    <div class="topbar-right">
+      <div class="date-pill"><i class="ti ti-calendar" style="font-size:13px"></i> Last 28 days</div>
+      <button class="btn" onclick="if(accessToken) loadGSC(); else startAuth()"><i class="ti ti-refresh" style="font-size:13px"></i> Refresh</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <div id="gsc-no-auth" style="display:block">
+      <div class="auth-banner" style="margin-bottom:20px">
+        <div class="auth-info">
+          <div class="auth-icon"><i class="ti ti-search" style="font-size:16px;color:var(--t3)"></i></div>
+          <div class="auth-text"><strong>Sign in to load Search Console data</strong><small>Uses the same Google account as your GA4 connection</small></div>
+        </div>
+        <button class="btn btn-primary" onclick="startAuth(); showPage('overview')"><i class="ti ti-brand-google" style="font-size:13px"></i> Sign in with Google</button>
+      </div>
+    </div>
+
+    <!-- Summary cards -->
+    <div class="section-heading"><i class="ti ti-chart-bar" style="font-size:12px"></i> All sites — last 28 days</div>
+    <div class="amz-stat-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:20px">
+      <div class="amz-stat-card"><div class="stat-label"><i class="ti ti-cursor-text" style="font-size:12px"></i> Total clicks</div><div class="stat-value" id="gsc-total-clicks" style="font-size:20px">—</div></div>
+      <div class="amz-stat-card"><div class="stat-label"><i class="ti ti-eye" style="font-size:12px"></i> Total impressions</div><div class="stat-value" id="gsc-total-imps" style="font-size:20px">—</div></div>
+      <div class="amz-stat-card"><div class="stat-label"><i class="ti ti-arrows-sort" style="font-size:12px"></i> Avg position</div><div class="stat-value" id="gsc-avg-pos" style="font-size:20px">—</div></div>
+      <div class="amz-stat-card"><div class="stat-label"><i class="ti ti-percentage" style="font-size:12px"></i> Avg CTR</div><div class="stat-value" id="gsc-avg-ctr" style="font-size:20px">—</div></div>
+    </div>
+
+    <!-- Per-site cards -->
+    <div class="section-heading"><i class="ti ti-world" style="font-size:12px"></i> By site</div>
+    <div class="amz-stat-grid" id="gsc-site-grid" style="grid-template-columns:repeat(2,1fr);margin-bottom:20px">
+      <div class="amz-stat-card"><div style="color:var(--t3);font-size:12px">Sign in to load site data...</div></div>
+      <div class="amz-stat-card"><div style="color:var(--t3);font-size:12px">Sign in to load site data...</div></div>
+      <div class="amz-stat-card"><div style="color:var(--t3);font-size:12px">Sign in to load site data...</div></div>
+      <div class="amz-stat-card"><div style="color:var(--t3);font-size:12px">Sign in to load site data...</div></div>
+    </div>
+
+
+
+  </div>
+</div><!-- /page-seo -->
+
+<!-- ═══════════════════════════════════
+     PAGE 2: AMAZON DEEP DIVE
+═══════════════════════════════════ -->
+<div class="page" id="page-amazon">
+  <div class="topbar">
+    <span class="topbar-title">Amazon Affiliate — Deep Dive</span>
+    <div class="topbar-right">
+      <button class="btn btn-orange" onclick="document.getElementById('csv-input').click()"><i class="ti ti-upload" style="font-size:13px"></i> Import CSV reports</button>
+      <input type="file" id="csv-input" accept=".csv" multiple style="display:none" onchange="handleCSV(event)">
+      <button class="btn" onclick="clearData()"><i class="ti ti-trash" style="font-size:13px"></i> Clear all</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <div class="drop-zone" id="drop-zone" onclick="document.getElementById('csv-input').click()">
+      <i class="ti ti-file-spreadsheet"></i>
+      <strong>Drop your Amazon Tracking-Id CSV reports here</strong>
+      <small>Associates Central → Reports → Earnings Report → Tracking-Id → CSV &nbsp;·&nbsp; Load multiple months at once, data stacks automatically</small>
+    </div>
+
+    <div class="chips" id="chips" style="display:none"></div>
+
+    <div class="filter-tabs" id="ftabs" style="display:none">
+      <button class="ftab active" data-tag="all">All tracking IDs</button>
+      <button class="ftab" data-tag="autobrand-20">AutomobileBrand</button>
+      <button class="ftab" data-tag="altrides-website-20">ArkLaTexRides</button>
+      <button class="ftab" data-tag="thatcompute07-website-20">ThatComputerGirl</button>
+      <button class="ftab" data-tag="salon0c7-20">JoeysHairSalon</button>
+    </div>
+
+    <div class="amz-stat-grid" id="amz-summary" style="display:none">
+      <div class="amz-stat-card"><div class="stat-label"><i class="ti ti-cursor-text" style="font-size:12px"></i> Clicks</div><div class="stat-value" id="s-clicks" style="font-size:20px">—</div></div>
+      <div class="amz-stat-card"><div class="stat-label"><i class="ti ti-shopping-cart" style="font-size:12px"></i> Items ordered</div><div class="stat-value" id="s-orders" style="font-size:20px">—</div></div>
+      <div class="amz-stat-card"><div class="stat-label"><i class="ti ti-currency-dollar" style="font-size:12px"></i> Ordered revenue</div><div class="stat-value" id="s-revenue" style="font-size:20px">—</div></div>
+      <div class="amz-stat-card"><div class="stat-label"><i class="ti ti-coins" style="font-size:12px"></i> Total earnings</div><div class="stat-value" id="s-earnings" style="font-size:20px;color:var(--orange)">—</div></div>
+      <div class="amz-stat-card"><div class="stat-label"><i class="ti ti-percentage" style="font-size:12px"></i> Conv. rate</div><div class="stat-value" id="s-conv" style="font-size:20px">—</div></div>
+    </div>
+
+    <div id="tag-section" style="display:none">
+      <div class="section-heading"><i class="ti ti-tag" style="font-size:12px"></i> By tracking ID — all time</div>
+      <div class="tag-grid" id="tag-grid"></div>
+    </div>
+
+    <div class="card" id="hist-card" style="display:none">
+      <div class="card-header">
+        <div><div class="card-title">Monthly history</div><div class="card-sub" id="hist-sub">All tracking IDs</div></div>
+        <span class="card-tag" id="hist-months">— months</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="hist-table">
+          <thead><tr>
+            <th style="width:13%">Month</th>
+            <th style="width:12%">Clicks</th>
+            <th style="width:12%">Orders</th>
+            <th style="width:15%">Revenue</th>
+            <th style="width:15%">Earnings</th>
+            <th style="width:10%">Conv %</th>
+            <th style="width:23%">Earnings bar</th>
+          </tr></thead>
+          <tbody id="hist-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="empty" id="amz-empty">
+      <i class="ti ti-brand-amazon"></i>
+      <p>No data yet — import your Tracking-Id CSV reports above.<br>
+      <span style="font-size:11px;display:block;margin-top:6px;color:var(--t3)">Associates Central → Reports → Earnings Report → Tracking-Id → CSV → Generate Reports → Download</span></p>
+    </div>
+
+  </div>
+</div><!-- /page-amazon -->
+
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<script src="https://accounts.google.com/gsi/client" async></script>
+<script>
+// ── Navigation ──────────────────────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === id));
+}
+document.querySelectorAll('.nav-item').forEach(n => n.addEventListener('click', () => showPage(n.dataset.page)));
+
+// ── Helpers ─────────────────────────────────────────────────────────────────
+const fmt    = n => (!n && n!==0) ? '—' : Math.round(n).toLocaleString();
+const fmtPct = n => (!n && n!==0) ? '—' : parseFloat(n).toFixed(1)+'%';
+const fmtM   = n => (!n && n!==0) ? '—' : '$'+parseFloat(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const fmtD   = s => { if(!s) return '—'; s=Math.round(s); return Math.floor(s/60)+'m '+(s%60)+'s'; };
+
+// ── GA4 OAuth ───────────────────────────────────────────────────────────────
+const CLIENT_ID = '561307865680-2m1vmbbf78ia278d3tsrbnan6tdf66f4.apps.googleusercontent.com';
+const PROPS = [
+  {id:'auto', pid:'360584404', name:'AutomobileBrand.com',  gsc:'sc-domain:automobilebrand.com'},
+  {id:'joey', pid:'364970541', name:'JoeysHairSalon.com',   gsc:'sc-domain:joeyshairsalon.com'},
+  {id:'tcg',  pid:'415946790', name:'ThatComputerGirl.com', gsc:'https://thatcomputergirl.com/'},
+  {id:'ark',  pid:'536971967', name:'ArkLaTexRides.com',    gsc:'https://www.arklatexrides.com/'},
+];
+let accessToken=null, tokenClient=null;
+
+function initTC() {
+  if(!window.google){setTimeout(initTC,200);return;}
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id:CLIENT_ID, scope:'https://www.googleapis.com/auth/analytics.readonly https://www.googleapis.com/auth/webmasters.readonly',
+    callback: r => { if(!r.error){accessToken=r.access_token; onAuth();} }
+  });
+}
+window.addEventListener('load',()=>setTimeout(initTC,500));
+function startAuth(){if(!tokenClient){alert('Still loading...');return;} tokenClient.requestAccessToken({prompt:'consent'});}
+
+function onAuth() {
+  const b=document.getElementById('auth-banner');
+  b.className='auth-banner connected';
+  b.innerHTML=`<div class="auth-info"><div class="auth-icon ok"><i class="ti ti-check" style="font-size:16px;color:#0F6E56"></i></div><div class="auth-text"><strong>Google Analytics connected</strong><small id="ga-status">Fetching data...</small></div></div><button class="btn" onclick="startAuth()"><i class="ti ti-refresh" style="font-size:13px"></i> Re-auth</button>`;
+  document.getElementById('auth-btn').style.display='none';
+  loadGA();
+}
+
+async function fetchGA4(pid,body){
+  const r=await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${pid}:runReport`,{
+    method:'POST', headers:{'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'}, body:JSON.stringify(body)
+  }); return r.json();
+}
+
+async function loadProp(p){
+  try{
+    const d=await fetchGA4(p.pid,{
+      dateRanges:[{startDate:'30daysAgo',endDate:'today'},{startDate:'60daysAgo',endDate:'31daysAgo'}],
+      metrics:[{name:'activeUsers'},{name:'screenPageViews'},{name:'bounceRate'},{name:'userEngagementDuration'}]
+    });
+    const c=d.rows?.[0]?.metricValues, v=d.rows?.[1]?.metricValues;
+    if(!c) return null;
+    return {visitors:+c[0].value, pageviews:+c[1].value, bounce:+c[2].value*100, dur:+c[3].value,
+            prevV:v?+v[0].value:null, prevP:v?+v[1].value:null};
+  }catch{return null;}
+}
+
+function deltaHtml(cur,prev){
+  if(!prev) return '<span class="delta-neutral">— vs prior period</span>';
+  const d=((cur-prev)/prev)*100, r=Math.round(Math.abs(d));
+  return d>=0
+    ? `<span class="delta-up"><i class="ti ti-arrow-up" style="font-size:11px"></i> ${r}% vs prior period</span>`
+    : `<span class="delta-down"><i class="ti ti-arrow-down" style="font-size:11px"></i> ${r}% vs prior period</span>`;
+}
+
+async function loadGA(){
+  const results=await Promise.all(PROPS.map(loadProp));
+  let tv=0,tp=0,pv=0,pp=0,maxV=1,n=0;
+  results.forEach(r=>{if(r){tv+=r.visitors;tp+=r.pageviews;pv+=r.prevV||0;pp+=r.prevP||0;if(r.visitors>maxV)maxV=r.visitors;n++;}});
+  document.getElementById('val-visitors').textContent=fmt(tv);
+  document.getElementById('val-pageviews').textContent=fmt(tp);
+  document.getElementById('delta-visitors').innerHTML=deltaHtml(tv,pv);
+  document.getElementById('delta-pageviews').innerHTML=deltaHtml(tp,pp);
+  PROPS.forEach((p,i)=>{
+    const r=results[i],pfx=p.id;
+    if(r){
+      const pct=Math.round((r.visitors/maxV)*100);
+      document.getElementById(`${pfx}-visitors`).innerHTML=fmt(r.visitors)+`<div class="mini-bar-track"><div class="mini-bar-fill" style="width:${pct}%"></div></div>`;
+      document.getElementById(`${pfx}-pageviews`).textContent=fmt(r.pageviews);
+      document.getElementById(`${pfx}-bounce`).textContent=fmtPct(r.bounce);
+      const dot=document.getElementById('dot-'+pfx); if(dot) dot.className='dot dot-green';
+    } else {
+      const ve=document.getElementById(`${pfx}-visitors`);
+      if(ve) ve.innerHTML='<span style="font-size:11px;color:var(--t3)">No data yet</span>';
+      const se=document.getElementById('status-'+pfx);
+      if(se){se.textContent='No data';se.className='badge badge-warn';}
+    }
+  });
+  const gs=document.getElementById('ga-status'); if(gs) gs.textContent=`Live data from ${n} GA4 properties`;
+  drawTrafficChart(results);
+  loadGSC();
+}
+
+function drawTrafficChart(results){
+  const el=document.getElementById('traffic-chart');
+  const bars=[
+    {l:'AutomobileBrand',v:results[0]?.visitors||0,c:'#639922'},
+    {l:'JoeysHairSalon', v:results[1]?.visitors||0,c:'#1D9E75'},
+    {l:'ThatComputerGirl',v:results[2]?.visitors||0,c:'#185FA5'},
+    {l:'ArkLaTexRides',  v:results[3]?.visitors||0,c:'#8B5CF6'},
+  ];
+  const max=Math.max(...bars.map(b=>b.v),1);
+  el.innerHTML=`<div style="width:100%;padding:10px 16px 8px;display:flex;align-items:flex-end;gap:14px;height:100%">${bars.map(b=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%"><div style="font-size:10px;color:var(--t3)">${fmt(b.v)}</div><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:${Math.max(4,Math.round((b.v/max)*100))}%;background:${b.c};border-radius:3px 3px 0 0;opacity:.75;min-height:4px"></div></div><div style="font-size:9px;color:var(--t3);text-align:center;line-height:1.3">${b.l}</div></div>`).join('')}</div>`;
+}
+
+function refreshData(){if(!accessToken){startAuth();return;} loadGA();}
+
+
+// ── Google Search Console API ─────────────────────────────────────────────
+async function fetchGSC(siteUrl, startDate, endDate) {
+  const res = await fetch(
+    `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`,
+    {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        startDate, endDate,
+        dimensions: [],
+        rowLimit: 1
+      })
+    }
+  );
+  return res.json();
+}
+
+async function loadGSC() {
+  const end   = new Date();
+  const start = new Date(); start.setDate(start.getDate() - 28);
+  const fmt   = d => d.toISOString().split('T')[0];
+
+  const results = await Promise.all(
+    PROPS.map(async p => {
+      if (!p.gsc) return null;
+      try {
+        const d = await fetchGSC(p.gsc, fmt(start), fmt(end));
+        const r = d.rows?.[0];
+        return r ? { clicks: r.clicks, impressions: r.impressions, ctr: r.ctr, position: r.position } : { clicks:0, impressions:0, ctr:0, position:0 };
+      } catch(e) { return null; }
+    })
+  );
+
+  PROPS.forEach((p, i) => {
+    const r = results[i];
+    const pfx = p.id;
+    // Update SEO cells in overview table
+    const posEl = document.getElementById(`${pfx}-seo-pos`);
+    const clkEl = document.getElementById(`${pfx}-seo-clicks`);
+    const impEl = document.getElementById(`${pfx}-seo-imp`);
+    if (!r) {
+      if (posEl) posEl.textContent = p.gsc ? 'Error' : 'Not set up';
+      if (clkEl) clkEl.textContent = '—';
+      if (impEl) impEl.textContent = '—';
+      return;
+    }
+    if (posEl) posEl.textContent = r.position ? r.position.toFixed(1) : '—';
+    if (clkEl) clkEl.textContent = r.clicks ? fmt2(r.clicks) : '—';
+    if (impEl) impEl.textContent = r.impressions ? fmt2(r.impressions) : '—';
+  });
+
+  // Update SEO page summary cards
+  const allClicks = results.reduce((a,r) => a + (r?.clicks||0), 0);
+  const allImps   = results.reduce((a,r) => a + (r?.impressions||0), 0);
+  const avgPos    = results.filter(r=>r?.position).reduce((a,r,_,arr) => a + r.position/arr.length, 0);
+  const s = id => document.getElementById(id);
+  if (s('gsc-total-clicks'))  s('gsc-total-clicks').textContent  = fmt2(allClicks);
+  if (s('gsc-total-imps'))    s('gsc-total-imps').textContent    = fmt2(allImps);
+  if (s('gsc-avg-pos'))       s('gsc-avg-pos').textContent       = avgPos ? avgPos.toFixed(1) : '—';
+  if (s('gsc-avg-ctr'))       s('gsc-avg-ctr').textContent       = allImps ? ((allClicks/allImps)*100).toFixed(2)+'%' : '—';
+
+  // Per-site GSC cards
+  renderGSCSiteCards(results);
+}
+
+function fmt2(n) { return (!n && n!==0) ? '—' : Math.round(n).toLocaleString(); }
+
+function renderGSCSiteCards(results) {
+  const grid = document.getElementById('gsc-site-grid');
+  if (!grid) return;
+  const colors = ['#639922','#1D9E75','#185FA5','#8B5CF6'];
+  grid.innerHTML = PROPS.map((p, i) => {
+    const r = results[i];
+    return `<div class="amz-stat-card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div style="width:8px;height:8px;border-radius:50%;background:${colors[i]};flex-shrink:0"></div>
+        <div style="font-size:12px;font-weight:500">${p.name}</div>
+        ${!p.gsc ? '<span class="badge badge-warn" style="margin-left:auto;font-size:9px">Not in GSC</span>' : ''}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><div class="metric-label">Clicks (28d)</div><div class="metric-value" style="font-size:16px">${fmt2(r?.clicks)}</div></div>
+        <div><div class="metric-label">Impressions</div><div class="metric-value" style="font-size:16px">${fmt2(r?.impressions)}</div></div>
+        <div><div class="metric-label">Avg position</div><div class="metric-value" style="font-size:16px">${r?.position ? r.position.toFixed(1) : '—'}</div></div>
+        <div><div class="metric-label">CTR</div><div class="metric-value" style="font-size:16px">${r?.ctr ? (r.ctr*100).toFixed(2)+'%' : '—'}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Amazon CSV ───────────────────────────────────────────────────────────────
+const TAG_MAP={
+  'autobrand-20':            {pfx:'auto',name:'AutomobileBrand.com'},
+  'altrides-website-20':     {pfx:'ark', name:'ArkLaTexRides.com'},
+  'thatcompute07-website-20':{pfx:'tcg', name:'ThatComputerGirl.com'},
+  'salon0c7-20':             {pfx:'joey',name:'JoeysHairSalon.com'},
+};
+
+let amzData=[];
+try{ amzData=JSON.parse(localStorage.getItem('amz')||'[]'); }catch{}
+
+function parseCSV(text){
+  const lines=text.trim().split(/\r?\n/);
+  if(lines.length<2) return [];
+  const hdrs=lines[0].split(',').map(h=>h.trim().toLowerCase());
+  const rows=[];
+  for(let i=1;i<lines.length;i++){
+    const vals=lines[i].split(',');
+    const o={};
+    hdrs.forEach((h,idx)=>o[h]=(vals[idx]||'').trim());
+    const tid=(o['tracking id']||o['tracking_id']||'').toLowerCase();
+    if(!tid||tid==='others') continue;
+    rows.push({
+      tid,
+      clicks:  parseFloat(o['clicks']||0),
+      orders:  parseFloat(o['items ordered']||o['items_ordered']||0),
+      revenue: parseFloat(o['ordered revenue']||o['ordered_revenue']||0),
+      earnings:parseFloat(o['total earnings']||o['total_earnings']||0),
+      date:    o['date']||'',
+    });
+  }
+  return rows;
+}
+
+function handleCSV(e){
+  const files=Array.from(e.target.files);
+  let pending=files.length;
+  files.forEach(f=>{
+    const fr=new FileReader();
+    fr.onload=ev=>{
+      amzData=amzData.filter(d=>d.filename!==f.name);
+      amzData.push({filename:f.name, rows:parseCSV(ev.target.result)});
+      try{localStorage.setItem('amz',JSON.stringify(amzData));}catch{}
+      if(--pending===0) renderAmz();
+    };
+    fr.readAsText(f);
+  });
+  e.target.value='';
+}
+
+function clearData(){if(!confirm('Clear all Amazon CSV data?')) return; amzData=[]; localStorage.removeItem('amz'); renderAmz();}
+
+function sumRows(rows){return rows.reduce((a,r)=>({clicks:a.clicks+r.clicks,orders:a.orders+r.orders,revenue:a.revenue+r.revenue,earnings:a.earnings+r.earnings}),{clicks:0,orders:0,revenue:0,earnings:0});}
+
+function getRows(tag){
+  const all=amzData.flatMap(d=>d.rows);
+  return tag==='all'?all:all.filter(r=>r.tid===tag);
+}
+
+function renderAmz(){
+  const allRows=amzData.flatMap(d=>d.rows);
+  const hasData=allRows.length>0;
+
+  document.getElementById('amz-empty').style.display=hasData?'none':'block';
+  document.getElementById('drop-zone').style.display=hasData?'none':'flex';
+  ['amz-summary','tag-section','hist-card','chips','ftabs'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.style.display=hasData?(id==='amz-summary'?'grid':'flex'):'none';
+  });
+  document.getElementById('tag-section').style.display=hasData?'block':'none';
+  document.getElementById('hist-card').style.display=hasData?'block':'none';
+
+  // Chips
+  document.getElementById('chips').innerHTML=amzData.map(d=>`<div class="chip"><i class="ti ti-file-spreadsheet" style="font-size:12px;color:var(--orange)"></i>${d.filename}<span class="chip-x" onclick="removeFile('${d.filename}')"><i class="ti ti-x"></i></span></div>`).join('');
+
+  // Active filter
+  const activeTag=document.querySelector('.ftab.active')?.dataset.tag||'all';
+  const filteredRows=getRows(activeTag);
+  const t=sumRows(filteredRows);
+  const conv=t.clicks>0?(t.orders/t.clicks*100).toFixed(1)+'%':'—';
+  document.getElementById('s-clicks').textContent=fmt(t.clicks);
+  document.getElementById('s-orders').textContent=fmt(t.orders);
+  document.getElementById('s-revenue').textContent=fmtM(t.revenue);
+  document.getElementById('s-earnings').textContent=fmtM(t.earnings);
+  document.getElementById('s-conv').textContent=conv;
+
+  // Update overview top cards
+  const allT=sumRows(allRows);
+  document.getElementById('val-amz-clicks').textContent=fmt(allT.clicks);
+  document.getElementById('val-amz-earnings').textContent=fmtM(allT.earnings);
+  document.getElementById('val-amz-clicks-sub').textContent='from imported CSVs';
+  document.getElementById('val-amz-earnings-sub').textContent='from imported CSVs';
+
+  // Update overview table
+  Object.entries(TAG_MAP).forEach(([tag,info])=>{
+    const rows=allRows.filter(r=>r.tid===tag);
+    const tt=sumRows(rows);
+    const pfx=info.pfx;
+    const tc=tt.clicks>0?(tt.orders/tt.clicks*100).toFixed(1)+'%':'—';
+    const s=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+    s(`${pfx}-amz-clicks`,  tt.clicks   ? fmt(tt.clicks)    : '—');
+    s(`${pfx}-amz-revenue`, tt.revenue  ? fmtM(tt.revenue)  : '—');
+    s(`${pfx}-amz-earnings`,tt.earnings ? fmtM(tt.earnings) : '—');
+    s(`${pfx}-amz-conv`,    tc);
+  });
+
+  // Per-tag cards
+  document.getElementById('tag-grid').innerHTML=Object.entries(TAG_MAP).map(([tag,info])=>{
+    const rows=allRows.filter(r=>r.tid===tag);
+    const tt=sumRows(rows);
+    const tc=tt.clicks>0?(tt.orders/tt.clicks*100).toFixed(1)+'%':'—';
+    return `<div class="tag-card">
+      <div class="tag-card-title">${info.name}</div>
+      <div class="tag-card-sub">${tag}</div>
+      <div class="tag-metrics">
+        <div><div class="metric-label">Clicks</div><div class="metric-value">${fmt(tt.clicks)}</div></div>
+        <div><div class="metric-label">Orders</div><div class="metric-value">${fmt(tt.orders)}</div></div>
+        <div><div class="metric-label">Revenue</div><div class="metric-value" style="font-size:15px">${fmtM(tt.revenue)}</div></div>
+        <div><div class="metric-label">Earnings</div><div class="metric-value" style="font-size:15px;color:var(--orange)">${fmtM(tt.earnings)}</div></div>
+        <div><div class="metric-label">Conv %</div><div class="metric-value">${tc}</div></div>
+        <div><div class="metric-label">Months loaded</div><div class="metric-value">${new Set(rows.map(r=>r.date.substring(0,7))).size}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Monthly history
+  const byMonth={};
+  filteredRows.forEach(r=>{
+    const k=r.date?r.date.substring(0,7):'Unknown';
+    if(!byMonth[k]) byMonth[k]={clicks:0,orders:0,revenue:0,earnings:0};
+    byMonth[k].clicks+=r.clicks; byMonth[k].orders+=r.orders;
+    byMonth[k].revenue+=r.revenue; byMonth[k].earnings+=r.earnings;
+  });
+  const months=Object.keys(byMonth).sort().reverse();
+  const maxE=Math.max(...months.map(m=>byMonth[m].earnings),0.01);
+  document.getElementById('hist-months').textContent=months.length+' months';
+  document.getElementById('hist-body').innerHTML=months.length
+    ? months.map(m=>{
+        const d=byMonth[m];
+        const mc=d.clicks>0?(d.orders/d.clicks*100).toFixed(1)+'%':'—';
+        const bw=Math.round((d.earnings/maxE)*100);
+        return `<tr>
+          <td><strong>${m}</strong></td>
+          <td>${fmt(d.clicks)}</td><td>${fmt(d.orders)}</td>
+          <td>${fmtM(d.revenue)}</td>
+          <td style="color:var(--orange);font-weight:500">${fmtM(d.earnings)}</td>
+          <td>${mc}</td>
+          <td><div class="amz-bar" style="width:${bw}%;min-width:${d.earnings>0?4:0}px"></div></td>
+        </tr>`;
+      }).join('')
+    : `<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:20px">No data for this filter</td></tr>`;
+
+  // Overview earnings chart
+  const el=document.getElementById('amz-overview-chart');
+  const bars=Object.entries(TAG_MAP).map(([tag,info],i)=>{
+    const rows=allRows.filter(r=>r.tid===tag);
+    return {l:info.name.replace('.com',''),v:sumRows(rows).earnings,c:['#639922','#8B5CF6','#185FA5','#1D9E75'][i]};
+  });
+  const max=Math.max(...bars.map(b=>b.v),0.01);
+  el.innerHTML=`<div style="width:100%;padding:10px 16px 8px;display:flex;align-items:flex-end;gap:14px;height:100%">${bars.map(b=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%"><div style="font-size:10px;color:var(--t3)">${fmtM(b.v)}</div><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:${Math.max(b.v>0?4:0,Math.round((b.v/max)*100))}%;background:${b.c};border-radius:3px 3px 0 0;opacity:.75;min-height:${b.v>0?4:0}px"></div></div><div style="font-size:9px;color:var(--t3);text-align:center;line-height:1.3">${b.l}</div></div>`).join('')}</div>`;
+}
+
+function removeFile(fn){amzData=amzData.filter(d=>d.filename!==fn);try{localStorage.setItem('amz',JSON.stringify(amzData));}catch{} renderAmz();}
+
+document.querySelectorAll('.ftab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.ftab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); renderAmz();
+}));
+
+// Drag and drop
+const dz=document.getElementById('drop-zone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{
+  e.preventDefault(); dz.classList.remove('drag');
+  const files=Array.from(e.dataTransfer.files).filter(f=>f.name.endsWith('.csv'));
+  if(files.length) handleCSV({target:{files,value:''}});
+});
+
+// Init saved data
+if(amzData.length) renderAmz();
+</script>
+</body>
+</html>
