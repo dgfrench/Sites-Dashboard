@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Affiliate Programs · Donna's Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0f1117;
+    --bg2:       #161820;
+    --bg3:       #1e2029;
+    --bg4:       #252731;
+    --border:    rgba(255,255,255,0.07);
+    --border2:   rgba(255,255,255,0.13);
+    --text:      #e8e9f0;
+    --text2:     #9a9baa;
+    --text3:     #5c5d6e;
+    --gold:      #e8a830;
+    --gold-dim:  #7a5518;
+    --gold-bg:   rgba(232,168,48,0.08);
+    --teal:      #2dd4a0;
+    --teal-dim:  #0f6e56;
+    --teal-bg:   rgba(45,212,160,0.08);
+    --coral:     #f07060;
+    --coral-dim: #7a3020;
+    --coral-bg:  rgba(240,112,96,0.08);
+    --blue:      #60a5fa;
+    --blue-dim:  #1e4070;
+    --blue-bg:   rgba(96,165,250,0.08);
+    --amber:     #fbbf24;
+    --amber-bg:  rgba(251,191,36,0.08);
+    --gray-bg:   rgba(255,255,255,0.04);
+    --radius-sm: 6px;
+    --radius:    10px;
+    --radius-lg: 16px;
+  }
+
+  html { font-size: 15px; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── Layout ── */
+  .shell { display: flex; min-height: 100vh; }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar-logo {
+    padding: 0 20px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .sidebar-logo .wordmark {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .sidebar-logo .wordmark span { color: var(--gold); }
+  .sidebar-logo .sub { font-size: 11px; color: var(--text3); margin-top: 2px; letter-spacing: 0.05em; }
+
+  .nav-label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text3);
+    padding: 0 20px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 20px;
+    font-size: 13px;
+    color: var(--text2);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+  .nav-link svg { width: 15px; height: 15px; opacity: 0.6; flex-shrink: 0; }
+  .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+  .nav-link.active { color: var(--gold); border-left-color: var(--gold); background: var(--gold-bg); }
+  .nav-link.active svg { opacity: 1; }
+
+  .sidebar-section { margin-bottom: 24px; }
+
+  .site-filters { padding: 0 12px; margin-top: auto; border-top: 1px solid var(--border); padding-top: 20px; }
+  .site-filter-label { font-size: 10px; letter-spacing: 0.1em; color: var(--text3); padding: 0 8px; margin-bottom: 8px; text-transform: uppercase; }
+  .site-chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 8px; border-radius: var(--radius-sm);
+    font-size: 12px; color: var(--text2); cursor: pointer;
+    transition: all 0.15s; border: 1px solid transparent;
+    margin-bottom: 3px;
+  }
+  .site-chip:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+  .site-chip.active { background: var(--gold-bg); color: var(--gold); border-color: var(--gold-dim); }
+  .site-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── Main ── */
+  .main { flex: 1; min-width: 0; }
+
+  /* ── Topbar ── */
+  .topbar {
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg2);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .topbar-left h1 { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; }
+  .topbar-left h1 em { font-style: italic; color: var(--gold); }
+  .topbar-meta { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .topbar-actions { display: flex; gap: 10px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: var(--radius-sm);
+    font-size: 13px; font-family: 'DM Sans', sans-serif;
+    cursor: pointer; border: 1px solid var(--border2);
+    background: transparent; color: var(--text2);
+    transition: all 0.15s; text-decoration: none;
+  }
+  .btn svg { width: 14px; height: 14px; }
+  .btn:hover { background: var(--bg4); color: var(--text); }
+  .btn-gold {
+    background: var(--gold); color: #0f1117;
+    border-color: var(--gold); font-weight: 500;
+  }
+  .btn-gold:hover { background: #f0b840; color: #0f1117; }
+
+  /* ── Summary Cards ── */
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 16px;
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .summary-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    animation: fadeUp 0.4s ease both;
+  }
+  .summary-card:nth-child(1) { animation-delay: 0.05s; }
+  .summary-card:nth-child(2) { animation-delay: 0.1s; }
+  .summary-card:nth-child(3) { animation-delay: 0.15s; }
+  .summary-card:nth-child(4) { animation-delay: 0.2s; }
+  .sc-label { font-size: 11px; color: var(--text3); letter-spacing: 0.04em; margin-bottom: 8px; text-transform: uppercase; }
+  .sc-value { font-size: 26px; font-weight: 300; color: var(--text); line-height: 1; }
+  .sc-value.gold { color: var(--gold); }
+  .sc-sub { font-size: 11px; color: var(--text3); margin-top: 6px; }
+  .sc-trend { font-size: 11px; margin-top: 6px; }
+  .sc-trend.up { color: var(--teal); }
+  .sc-trend.warn { color: var(--amber); }
+
+  /* ── Content Area ── */
+  .content { padding: 24px 32px; }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .filter-pill {
+    font-size: 12px; padding: 5px 14px;
+    border-radius: 20px; border: 1px solid var(--border2);
+    background: transparent; color: var(--text2);
+    cursor: pointer; transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .filter-pill:hover { border-color: var(--border2); color: var(--text); background: var(--bg4); }
+  .filter-pill.active { background: var(--gold); color: #0f1117; border-color: var(--gold); font-weight: 500; }
+
+  .sort-wrap { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .sort-label { font-size: 12px; color: var(--text3); }
+  .sort-sel {
+    font-size: 12px; padding: 5px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border2);
+    background: var(--bg3); color: var(--text);
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+  }
+
+  /* ── Program List ── */
+  .prog-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .prog-row {
+    display: grid;
+    grid-template-columns: 44px 1fr repeat(3, 110px) 36px;
+    gap: 12px;
+    align-items: center;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    animation: fadeUp 0.35s ease both;
+    text-decoration: none;
+    color: inherit;
+  }
+  .prog-row:hover { background: var(--bg4); border-color: var(--border2); }
+  .prog-row.selected { border-color: var(--gold-dim); background: var(--gold-bg); }
+
+  .prog-avatar {
+    width: 40px; height: 40px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; flex-shrink: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .prog-info { min-width: 0; }
+  .prog-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+  .prog-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+  .tag {
+    font-size: 10px; padding: 2px 7px; border-radius: 4px;
+    font-weight: 500; letter-spacing: 0.02em;
+  }
+  .tag-status-active    { background: var(--teal-bg);  color: var(--teal);  border: 1px solid rgba(45,212,160,0.2); }
+  .tag-status-pending   { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(251,191,36,0.2); }
+  .tag-status-applied   { background: var(--blue-bg);  color: var(--blue);  border: 1px solid rgba(96,165,250,0.2); }
+  .tag-status-paused    { background: var(--gray-bg);  color: var(--text2); border: 1px solid var(--border); }
+  .tag-status-rejected  { background: var(--coral-bg); color: var(--coral); border: 1px solid rgba(240,112,96,0.2); }
+  .tag-site { background: rgba(255,255,255,0.05); color: var(--text3); border: 1px solid var(--border); }
+  .tag-network { background: rgba(232,168,48,0.07); color: var(--gold); border: 1px solid var(--gold-dim); }
+
+  .prog-stat { text-align: right; }
+  .ps-label { font-size: 10px; color: var(--text3); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px; }
+  .ps-value { font-size: 15px; font-weight: 500; }
+  .ps-value.earn { color: var(--teal); }
+  .ps-value.neutral { color: var(--text2); }
+  .ps-bar-wrap { height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-top: 5px; }
+  .ps-bar { height: 3px; border-radius: 2px; }
+
+  .prog-chevron { color: var(--text3); display: flex; align-items: center; justify-content: flex-end; }
+  .prog-chevron svg { width: 16px; height: 16px; transition: transform 0.2s; }
+  .prog-row.selected .prog-chevron svg { transform: rotate(90deg); }
+
+  /* ── Detail Panel ── */
+  .detail-panel {
+    margin-top: 8px;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    animation: slideDown 0.2s ease;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .dp-header {
+    padding: 20px 24px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .dp-avatar {
+    width: 52px; height: 52px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 600; flex-shrink: 0;
+  }
+  .dp-title { font-size: 18px; font-weight: 500; margin-bottom: 6px; font-family: 'DM Serif Display', serif; }
+  .dp-chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .dp-actions { margin-left: auto; display: flex; gap: 8px; flex-shrink: 0; }
+
+  .dp-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-bottom: 1px solid var(--border);
+  }
+  .dp-section { padding: 18px 24px; border-right: 1px solid var(--border); }
+  .dp-section:last-child { border-right: none; }
+  .dp-section-title {
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 14px; font-weight: 500;
+  }
+  .dp-kv { display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .dp-kv:last-child { border-bottom: none; }
+  .dp-key { color: var(--text3); }
+  .dp-val { font-weight: 500; text-align: right; }
+  .dp-val.earn { color: var(--teal); }
+
+  .dp-footer {
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .dp-notes {
+    font-size: 13px; color: var(--text2); flex: 1;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dp-notes svg { width: 14px; height: 14px; color: var(--text3); flex-shrink: 0; }
+
+  /* ── Focus Score ── */
+  .focus-dots { display: flex; gap: 4px; align-items: center; }
+  .fdot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.1); }
+  .fdot.on { background: var(--gold); }
+
+  /* ── Add Row ── */
+  .add-row {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px; border-radius: var(--radius);
+    border: 1px dashed var(--border2); color: var(--text3);
+    cursor: pointer; font-size: 13px; margin-top: 8px;
+    transition: all 0.15s; background: transparent;
+    font-family: 'DM Sans', sans-serif; width: 100%;
+  }
+  .add-row:hover { border-color: var(--gold-dim); color: var(--gold); background: var(--gold-bg); }
+  .add-row svg { width: 15px; height: 15px; }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Focus Score Badge ── */
+  .focus-badge { display: flex; align-items: center; gap: 6px; }
+  .focus-text { font-size: 11px; color: var(--text3); }
+
+  /* ── Empty State ── */
+  .empty { padding: 48px; text-align: center; color: var(--text3); font-size: 14px; }
+
+  /* ── Header list row ── */
+  .list-header {
+    display: grid;
+    grid-template-columns: 44px 1fr repeat(3, 110px) 36px;
+    gap: 12px;
+    padding: 0 16px 8px;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+  .lh-stat { text-align: right; }
+
+  /* ── Back link ── */
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--text3); text-decoration: none;
+    margin-bottom: 20px; transition: color 0.15s;
+  }
+  .back-link:hover { color: var(--gold); }
+  .back-link svg { width: 14px; height: 14px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .summary-row { grid-template-columns: 1fr 1fr; }
+    .prog-row { grid-template-columns: 40px 1fr 100px 24px; }
+    .prog-stat:nth-child(4), .prog-stat:nth-child(5) { display: none; }
+    .dp-body { grid-template-columns: 1fr; }
+    .dp-section { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="wordmark">Donna's<br><span>Dashboard</span></div>
+      <div class="sub">Site portfolio · 2026</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="nav-label">Navigation</div>
+      <a class="nav-link" href="dashboard.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Sites overview
+      </a>
+      <a class="nav-link active" href="affiliates.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        Affiliate programs
+      </a>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Analytics
+      </a>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        Amazon sales
+      </a>
+    </div>
+
+    <div class="site-filters">
+      <div class="site-filter-label">Filter by site</div>
+      <div class="site-chip active" onclick="filterBySite('all', this)">
+        <div class="site-dot" style="background:var(--gold)"></div>
+        All sites
+      </div>
+      <div class="site-chip" onclick="filterBySite('tcg', this)">
+        <div class="site-dot" style="background:#60a5fa"></div>
+        ThatComputerGirl
+      </div>
+      <div class="site-chip" onclick="filterBySite('ab', this)">
+        <div class="site-dot" style="background:#2dd4a0"></div>
+        AutomobileBrand
+      </div>
+      <div class="site-chip" onclick="filterBySite('jhs', this)">
+        <div class="site-dot" style="background:#f07060"></div>
+        JoeysHairSalon
+      </div>
+      <div class="site-chip" onclick="filterBySite('altr', this)">
+        <div class="site-dot" style="background:#fbbf24"></div>
+        ArkLaTexRides
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>Affiliate <em>programs</em></h1>
+        <div class="topbar-meta" id="topbar-meta">Loading…</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn" onclick="window.open('https://mail.google.com/mail/u/0/#label/That+Computer+Girl%2FAffiliate+Welcome','_blank')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+          Welcome emails
+        </button>
+        <button class="btn btn-gold" onclick="addProgram()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add program
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary cards -->
+    <div class="summary-row" id="summary-row"></div>
+
+    <!-- Program list -->
+    <div class="content">
+      <div class="toolbar">
+        <button class="filter-pill active" onclick="setStatusFilter('all', this)">All</button>
+        <button class="filter-pill" onclick="setStatusFilter('active', this)">Active</button>
+        <button class="filter-pill" onclick="setStatusFilter('pending', this)">Pending</button>
+        <button class="filter-pill" onclick="setStatusFilter('applied', this)">Applied</button>
+        <button class="filter-pill" onclick="setStatusFilter('paused', this)">Paused</button>
+        <div class="sort-wrap">
+          <span class="sort-label">Sort by</span>
+          <select class="sort-sel" onchange="setSort(this.value)">
+            <option value="earnings">Earnings</option>
+            <option value="ctr">Click rate</option>
+            <option value="focus">Focus score</option>
+            <option value="name">Name</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="list-header">
+        <div></div>
+        <div>Program</div>
+        <div class="lh-stat">Earnings</div>
+        <div class="lh-stat">CTR</div>
+        <div class="lh-stat">Focus</div>
+        <div></div>
+      </div>
+
+      <div class="prog-list" id="prog-list"></div>
+
+      <button class="add-row" onclick="addProgram()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add new affiliate program
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ─── DATA ─────────────────────────────────────────────────────────────────
+   Edit this array to update your programs. Each object:
+   - id          unique number
+   - name        program display name
+   - network     network/platform name
+   - icon        1-2 letters for the avatar
+   - iconBg      avatar background color (hex)
+   - iconColor   avatar text color (hex)
+   - status      'active' | 'pending' | 'applied' | 'paused' | 'rejected'
+   - sites       array of site keys: 'tcg' | 'ab' | 'jhs' | 'altr'
+   - earnings    number (monthly, enter 0 if none yet)
+   - clicks      number (monthly clicks, enter 0 if none yet)
+   - conversions number
+   - ctr         click-through rate as a percentage number e.g. 2.9
+   - commissionRate  string e.g. '1–10%'
+   - cookie      string e.g. '30 days'
+   - payThreshold string e.g. '$50'
+   - loginUrl    full URL to the affiliate login page
+   - paymentDate string e.g. 'Net 30'
+   - focus       number 1–5 (your daily priority rating)
+   - gmailLabel  the Gmail label path for this site, used for the email button
+   - notes       your personal notes string
+─────────────────────────────────────────────────────────────────────────── */
+const PROGRAMS = [
+  {
+    id: 1,
+    name: 'Amazon Associates',
+    network: 'Amazon',
+    icon: 'A',
+    iconBg: '#2a1f0a',
+    iconColor: '#e8a830',
+    status: 'active',
+    sites: ['tcg','ab','jhs','altr'],
+    earnings: 847.32,
+    clicks: 3241,
+    conversions: 94,
+    ctr: 2.9,
+    commissionRate: '1–10%',
+    cookie: '24 hrs',
+    payThreshold: '$10',
+    loginUrl: 'https://affiliate-program.amazon.com/',
+    paymentDate: 'Net 60',
+    focus: 5,
+    gmailLabel: 'That+Computer+Girl%2FAffiliate+Welcome',
+    notes: 'Primary monetization on all four sites. Separate tag IDs per site — see tag list in each site\'s WP dashboard.'
+  },
+  {
+    id: 2,
+    name: 'Awin',
+    network: 'Awin',
+    icon: 'Aw',
+    iconBg: '#0a1f18',
+    iconColor: '#2dd4a0',
+    status: 'active',
+    sites: ['tcg','ab'],
+    earnings: 312.50,
+    clicks: 1870,
+    conversions: 28,
+    ctr: 1.5,
+    commissionRate: '5–15%',
+    cookie: '30 days',
+    payThreshold: '£20',
+    loginUrl: 'https://www.awin.com/us/login',
+    paymentDate: 'Net 30',
+    focus: 4,
+    gmailLabel: 'That+Computer+Girl%2FAffiliate+Welcome',
+    notes: 'Good for tech & auto brands not on Amazon. Has live API — earnings can be pulled automatically.'
+  },
+  {
+    id: 3,
+    name: 'ShareASale',
+    network: 'ShareASale',
+    icon: 'SA',
+    iconBg: '#0a1220',
+    iconColor: '#60a5fa',
+    status: 'active',
+    sites: ['tcg','jhs'],
+    earnings: 198.00,
+    clicks: 980,
+    conversions: 19,
+    ctr: 1.9,
+    commissionRate: '5–20%',
+    cookie: '60 days',
+    payThreshold: '$50',
+    loginUrl: 'https://account.shareasale.com/',
+    paymentDate: '20th of month',
+    focus: 4,
+    gmailLabel: 'That+Computer+Girl%2FAffiliate+Welcome',
+    notes: 'Salon & beauty brands performing well on JoeysHairSalon. Room to expand product coverage.'
+  },
+  {
+    id: 4,
+    name: 'CJ Affiliate',
+    network: 'CJ',
+    icon: 'CJ',
+    iconBg: '#20100a',
+    iconColor: '#f07060',
+    status: 'applied',
+    sites: ['tcg'],
+    earnings: 0,
+    clicks: 0,
+    conversions: 0,
+    ctr: 0,
+    commissionRate: 'Varies',
+    cookie: '30–90 days',
+    payThreshold: '$50',
+    loginUrl: 'https://members.cj.com/',
+    paymentDate: 'Net 20',
+    focus: 2,
+    gmailLabel: 'That+Computer+Girl%2FAffiliate+Welcome',
+    notes: 'Applied for tech niche advertisers. Awaiting approval — follow up if no response in 2 weeks.'
+  },
+  {
+    id: 5,
+    name: 'Impact Radius',
+    network: 'Impact',
+    icon: 'IR',
+    iconBg: '#1a0f1a',
+    iconColor: '#c084fc',
+    status: 'pending',
+    sites: ['tcg','ab'],
+    earnings: 0,
+    clicks: 0,
+    conversions: 0,
+    ctr: 0,
+    commissionRate: '5–12%',
+    cookie: '30 days',
+    payThreshold: '$25',
+    loginUrl: 'https://app.impact.com/',
+    paymentDate: 'Net 30',
+    focus: 3,
+    gmailLabel: 'That+Computer+Girl%2FAffiliate+Welcome',
+    notes: 'Invite received. Strong auto & tech advertisers — high priority once approved.'
+  },
+  {
+    id: 6,
+    name: 'Ezoic Monetize',
+    network: 'Ezoic',
+    icon: 'Ez',
+    iconBg: '#0f1a0a',
+    iconColor: '#86efac',
+    status: 'paused',
+    sites: ['ab'],
+    earnings: 54.10,
+    clicks: 4200,
+    conversions: 0,
+    ctr: 0,
+    commissionRate: 'RPM-based',
+    cookie: 'N/A',
+    payThreshold: '$20',
+    loginUrl: 'https://app.ezoic.com/',
+    paymentDate: 'Net 45',
+    focus: 1,
+    gmailLabel: 'AutomobileBrand%2FAffiliate+Welcome',
+    notes: 'Paused while cleaning up AutomobileBrand bot traffic. Re-evaluate after traffic audit.'
+  }
+];
+
+const SITE_NAMES = {
+  tcg: 'ThatComputerGirl',
+  ab: 'AutomobileBrand',
+  jhs: 'JoeysHairSalon',
+  altr: 'ArkLaTexRides'
+};
+
+const SITE_COLORS = {
+  tcg: '#60a5fa', ab: '#2dd4a0', jhs: '#f07060', altr: '#fbbf24'
+};
+
+/* ─── STATE ─── */
+let statusFilter = 'all';
+let siteFilter   = 'all';
+let sortBy       = 'earnings';
+let selectedId   = null;
+
+/* ─── HELPERS ─── */
+function fmt$(n) { return n > 0 ? '$' + n.toFixed(2) : '—'; }
+function fmtCtr(n) { return n > 0 ? n.toFixed(1) + '%' : '—'; }
+function fmtNum(n) { return n > 0 ? n.toLocaleString() : '—'; }
+
+function statusTag(s) {
+  return `<span class="tag tag-status-${s}">${s}</span>`;
+}
+
+function focusDots(n) {
+  let h = '<div class="focus-dots">';
+  for (let i = 1; i <= 5; i++) h += `<div class="fdot${i <= n ? ' on' : ''}"></div>`;
+  return h + '</div>';
+}
+
+function perf(val, max, color) {
+  const pct = max > 0 ? Math.min(100, Math.round((val / max) * 100)) : 0;
+  return `<div class="ps-bar-wrap"><div class="ps-bar" style="width:${pct}%;background:${color}"></div></div>`;
+}
+
+function gmailUrl(p) {
+  const label = p.gmailLabel || 'Affiliate+Welcome';
+  const q = encodeURIComponent(p.network.toLowerCase());
+  return `https://mail.google.com/mail/u/0/#search/label%3A${label}+${q}`;
+}
+
+/* ─── SUMMARY ─── */
+function renderSummary() {
+  const active = PROGRAMS.filter(p => p.status === 'active');
+  const totalEarnings = active.reduce((s, p) => s + p.earnings, 0);
+  const totalClicks   = active.reduce((s, p) => s + p.clicks, 0);
+  const top = [...active].sort((a, b) => b.earnings - a.earnings)[0];
+  const pending = PROGRAMS.filter(p => p.status === 'pending' || p.status === 'applied').length;
+  const today = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+  document.getElementById('topbar-meta').textContent =
+    `${today} · ${PROGRAMS.length} programs across 4 sites`;
+
+  document.getElementById('summary-row').innerHTML = `
+    <div class="summary-card">
+      <div class="sc-label">Total earnings · active</div>
+      <div class="sc-value gold">$${totalEarnings.toFixed(2)}</div>
+      <div class="sc-sub">${active.length} active programs</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-label">Total clicks · active</div>
+      <div class="sc-value">${totalClicks.toLocaleString()}</div>
+      <div class="sc-sub">Last recorded period</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-label">Top performer</div>
+      <div class="sc-value" style="font-size:17px;padding-top:4px">${top ? top.name : '—'}</div>
+      <div class="sc-trend up">${top ? '↑ $' + top.earnings.toFixed(2) + ' this period' : ''}</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-label">Awaiting approval</div>
+      <div class="sc-value">${pending}</div>
+      <div class="sc-trend warn">${pending > 0 ? '⚡ Follow up on ' + pending + ' program' + (pending > 1 ? 's' : '') : 'All clear'}</div>
+    </div>
+  `;
+}
+
+/* ─── LIST ─── */
+function getFiltered() {
+  return PROGRAMS
+    .filter(p => statusFilter === 'all' || p.status === statusFilter)
+    .filter(p => siteFilter === 'all' || p.sites.includes(siteFilter))
+    .sort((a, b) => {
+      if (sortBy === 'earnings') return b.earnings - a.earnings;
+      if (sortBy === 'ctr')     return b.ctr - a.ctr;
+      if (sortBy === 'focus')   return b.focus - a.focus;
+      return a.name.localeCompare(b.name);
+    });
+}
+
+function renderList() {
+  const list = getFiltered();
+  const maxE = Math.max(...PROGRAMS.map(p => p.earnings), 1);
+  const maxC = Math.max(...PROGRAMS.map(p => p.ctr), 1);
+
+  if (!list.length) {
+    document.getElementById('prog-list').innerHTML =
+      '<div class="empty">No programs match this filter.</div>';
+    return;
+  }
+
+  let html = '';
+  list.forEach((p, i) => {
+    const sel = p.id === selectedId ? ' selected' : '';
+    const siteTags = p.sites.map(s =>
+      `<span class="tag tag-site" style="border-color:${SITE_COLORS[s]}20;color:${SITE_COLORS[s]}">${SITE_NAMES[s]}</span>`
+    ).join('');
+
+    html += `
+    <div class="prog-row${sel}" onclick="selectProg(${p.id})"
+         style="animation-delay:${i * 0.04}s" role="button" tabindex="0"
+         aria-label="${p.name} — ${p.status}">
+      <div class="prog-avatar" style="background:${p.iconBg};color:${p.iconColor}">${p.icon}</div>
+      <div class="prog-info">
+        <div class="prog-name">${p.name}</div>
+        <div class="prog-tags">
+          ${statusTag(p.status)}
+          <span class="tag tag-network">${p.network}</span>
+          ${siteTags}
+        </div>
+      </div>
+      <div class="prog-stat">
+        <div class="ps-label">Earnings</div>
+        <div class="ps-value earn">${fmt$(p.earnings)}</div>
+        ${perf(p.earnings, maxE, '#2dd4a0')}
+      </div>
+      <div class="prog-stat">
+        <div class="ps-label">CTR</div>
+        <div class="ps-value neutral">${fmtCtr(p.ctr)}</div>
+        ${perf(p.ctr, maxC, '#e8a830')}
+      </div>
+      <div class="prog-stat">
+        <div class="ps-label">Focus</div>
+        ${focusDots(p.focus)}
+      </div>
+      <div class="prog-chevron">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </div>
+    </div>
+    ${p.id === selectedId ? renderDetailHTML(p) : ''}
+    `;
+  });
+
+  document.getElementById('prog-list').innerHTML = html;
+}
+
+/* ─── DETAIL ─── */
+function renderDetailHTML(p) {
+  const siteList = p.sites.map(s => SITE_NAMES[s]).join(', ');
+  return `
+  <div class="detail-panel">
+    <div class="dp-header">
+      <div class="dp-avatar" style="background:${p.iconBg};color:${p.iconColor}">${p.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div class="dp-title">${p.name}</div>
+        <div class="dp-chips">
+          ${statusTag(p.status)}
+          <span class="tag tag-network">${p.network}</span>
+          <span style="font-size:11px;color:var(--text3);margin-left:4px">Focus:</span>
+          ${focusDots(p.focus)}
+        </div>
+      </div>
+      <div class="dp-actions">
+        <a class="btn" href="${gmailUrl(p)}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+          Welcome email
+        </a>
+        <a class="btn" href="${p.loginUrl}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Login
+        </a>
+      </div>
+    </div>
+
+    <div class="dp-body">
+      <div class="dp-section">
+        <div class="dp-section-title">Performance</div>
+        <div class="dp-kv"><span class="dp-key">Earnings</span><span class="dp-val earn">${fmt$(p.earnings)}</span></div>
+        <div class="dp-kv"><span class="dp-key">Total clicks</span><span class="dp-val">${fmtNum(p.clicks)}</span></div>
+        <div class="dp-kv"><span class="dp-key">Conversions</span><span class="dp-val">${p.conversions > 0 ? p.conversions : '—'}</span></div>
+        <div class="dp-kv"><span class="dp-key">Click-through rate</span><span class="dp-val">${fmtCtr(p.ctr)}</span></div>
+      </div>
+      <div class="dp-section">
+        <div class="dp-section-title">Program details</div>
+        <div class="dp-kv"><span class="dp-key">Commission</span><span class="dp-val">${p.commissionRate}</span></div>
+        <div class="dp-kv"><span class="dp-key">Cookie window</span><span class="dp-val">${p.cookie}</span></div>
+        <div class="dp-kv"><span class="dp-key">Pay threshold</span><span class="dp-val">${p.payThreshold}</span></div>
+        <div class="dp-kv"><span class="dp-key">Payment timing</span><span class="dp-val">${p.paymentDate}</span></div>
+      </div>
+      <div class="dp-section">
+        <div class="dp-section-title">Sites using this program</div>
+        ${p.sites.map(s => `
+          <div class="dp-kv">
+            <span class="dp-key" style="display:flex;align-items:center;gap:6px">
+              <span style="width:7px;height:7px;border-radius:50%;background:${SITE_COLORS[s]};display:inline-block"></span>
+              ${SITE_NAMES[s]}
+            </span>
+            <span class="dp-val" style="color:var(--teal);font-size:12px">active</span>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="dp-footer">
+      <div class="dp-notes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        ${p.notes}
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+/* ─── INTERACTIONS ─── */
+function selectProg(id) {
+  selectedId = selectedId === id ? null : id;
+  renderList();
+  if (selectedId) {
+    setTimeout(() => {
+      const panel = document.querySelector('.detail-panel');
+      if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+  }
+}
+
+function setStatusFilter(f, btn) {
+  statusFilter = f;
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedId = null;
+  renderList();
+}
+
+function filterBySite(s, chip) {
+  siteFilter = s;
+  document.querySelectorAll('.site-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  selectedId = null;
+  renderList();
+}
+
+function setSort(v) {
+  sortBy = v;
+  renderList();
+}
+
+function addProgram() {
+  alert('To add a new program, open affiliates.html in your code editor and add a new object to the PROGRAMS array at the top of the <script> section. Copy any existing entry as a template.');
+}
+
+/* ─── INIT ─── */
+renderSummary();
+renderList();
+</script>
+</body>
+</html>
