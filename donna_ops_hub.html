@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Donna Digital HQ</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
+<style>
+:root {
+  --red:#e03c3c;--red-dark:#b02a2a;--red-light:#ff6b6b;
+  --bg:#0b0e14;--card:#111827;--card2:#161e2e;
+  --border:#1e2840;--border2:#252d40;
+  --text:#c8d4e8;--bright:#e8eef8;--muted:#4a5570;--mid:#5a6a8a;
+  --green:#2ea86a;--amber:#d4900a;--blue:#4a90d9;--purple:#7a5ad4;
+  --radius:8px;--gap:16px;
+  --font:'Segoe UI',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;}
+
+/* HEADER */
+.hdr{background:#080b10;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:100;border-bottom:2px solid var(--red-dark);}
+.logo{font-size:14px;font-weight:700;color:var(--bright);letter-spacing:.08em;text-transform:uppercase;}
+.logo span{color:var(--red-light);}
+.hdr-right{display:flex;align-items:center;gap:16px;}
+.hdr-date{font-size:11px;color:var(--muted);}
+.sync-btn{font-size:11px;font-weight:700;padding:5px 12px;background:transparent;border:1px solid var(--border2);border-radius:5px;color:var(--mid);cursor:pointer;letter-spacing:.05em;text-transform:uppercase;transition:all .15s;}
+.sync-btn:hover{border-color:var(--blue);color:var(--blue);}
+.sync-status{font-size:11px;color:var(--muted);}
+
+/* TABS */
+.tabs{background:#0d1118;display:flex;gap:0;padding:0 24px;overflow-x:auto;border-bottom:1px solid var(--border);}
+.tabs::-webkit-scrollbar{height:3px;}
+.tabs::-webkit-scrollbar-thumb{background:var(--red-dark);}
+.tab{padding:11px 18px;font-size:11px;font-weight:700;color:var(--muted);border:none;background:none;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;letter-spacing:.06em;text-transform:uppercase;}
+.tab:hover{color:var(--bright);}
+.tab.active{color:var(--red-light);border-bottom-color:var(--red);}
+
+/* PANELS */
+.panel{display:none;padding:20px 24px;max-width:1400px;margin:0 auto;}
+.panel.active{display:block;}
+
+/* LOADING */
+.loading-bar{height:2px;background:var(--red);position:fixed;top:54px;left:0;z-index:200;transition:width .3s;width:0;}
+
+/* GRIDS */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:var(--gap);margin-bottom:var(--gap);}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);margin-bottom:var(--gap);}
+.full{margin-bottom:var(--gap);}
+@media(max-width:900px){.two-col{grid-template-columns:1fr;}}
+
+/* KPI CARDS */
+.kpi{background:var(--card);border-radius:var(--radius);padding:16px 18px;border:1px solid var(--border);border-left:3px solid var(--red);}
+.kpi.g{border-left-color:var(--green);}
+.kpi.a{border-left-color:var(--amber);}
+.kpi.b{border-left-color:var(--blue);}
+.kpi-label{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:4px;}
+.kpi-val{font-size:24px;font-weight:700;color:var(--bright);}
+.kpi-sub{font-size:11px;color:var(--mid);margin-top:2px;}
+
+/* CARDS */
+.card{background:var(--card);border-radius:var(--radius);padding:18px;border:1px solid var(--border);}
+.card-hd{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.card-hd-left{display:flex;align-items:center;gap:8px;}
+
+/* BADGES */
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;letter-spacing:.03em;}
+.badge.red{background:#2a0e0e;color:#ff8080;border:1px solid #4a1a1a;}
+.badge.green{background:#0d2e1c;color:#5dcc9a;border:1px solid #1a4a2e;}
+.badge.amber{background:#2a1e04;color:#e8b040;border:1px solid #3a2a08;}
+.badge.blue{background:#0d1e35;color:#6ab0f0;border:1px solid #1a3050;}
+.badge.gray{background:#181e2e;color:#7a8aaa;border:1px solid var(--border2);}
+.badge.purple{background:#1a1030;color:#b080e8;border:1px solid #2a1a48;}
+.badge.count{background:var(--red-dark);color:#ffaaaa;border:1px solid var(--red-dark);}
+
+/* TABLES */
+.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.tbl thead th{text-align:left;padding:7px 10px;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;}
+.tbl thead th:hover{color:var(--text);}
+.tbl tbody td{padding:8px 10px;border-bottom:1px solid #0f1520;vertical-align:middle;color:var(--text);}
+.tbl tbody tr:hover{background:#0f1825;}
+.tbl tbody tr:last-child td{border-bottom:none;}
+.tbl-wrap{overflow-x:auto;}
+
+/* SITE PILLS */
+.sp{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;white-space:nowrap;}
+.sp.tcg{background:#2a0e0e;color:#ff8080;border:1px solid #4a1a1a;}
+.sp.auto{background:#0d1e35;color:#6ab0f0;border:1px solid #1a3050;}
+.sp.joey{background:#1a1030;color:#b080e8;border:1px solid #2a1a48;}
+.sp.ark{background:#0a2018;color:#50c080;border:1px solid #163830;}
+
+/* SCORE BAR */
+.sbar-wrap{display:flex;align-items:center;gap:8px;}
+.sbar{height:4px;border-radius:2px;background:#1a2035;flex:1;min-width:50px;}
+.sbar-fill{height:100%;border-radius:2px;background:var(--red);}
+.sbar-fill.hi{background:var(--green);}
+.sbar-fill.mi{background:var(--amber);}
+.sbar-num{font-size:11px;font-weight:700;color:var(--mid);min-width:22px;text-align:right;}
+
+/* PRIORITY CHIPS */
+.pchip{display:inline-flex;width:20px;height:20px;border-radius:50%;font-size:10px;font-weight:800;align-items:center;justify-content:center;color:#fff;flex-shrink:0;}
+.pchip.p1{background:var(--red);}
+.pchip.p2{background:var(--amber);}
+.pchip.p3{background:var(--blue);}
+.pchip.p4{background:var(--muted);}
+
+/* CHART */
+.chart-wrap{position:relative;height:200px;}
+
+/* ALERTS */
+.alert{border-radius:0;padding:9px 13px;font-size:12px;margin-top:10px;border-left:3px solid;}
+.alert.crit{background:#1e0808;border-color:var(--red);color:#ee7070;}
+.alert.warn{background:#1e1608;border-color:var(--amber);color:#c8a060;}
+.alert.info{background:#0a1828;border-color:var(--blue);color:#6aaae0;}
+.alert strong{font-weight:700;color:var(--bright);}
+
+/* FILTERS */
+.filter-row{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+.filter-row select,.filter-row input{padding:6px 10px;border:1px solid var(--border);border-radius:5px;font-size:12px;color:var(--text);background:#0d1220;font-family:var(--font);}
+.filter-row select:focus,.filter-row input:focus{outline:1px solid var(--red);}
+
+/* FORMS */
+.form-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;display:block;}
+.form-input{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:5px;font-family:var(--font);font-size:13px;color:var(--bright);background:#0d1220;resize:vertical;}
+.form-input:focus{outline:1px solid var(--red);border-color:var(--red);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr;}}
+
+/* BUTTONS */
+.btn{padding:8px 18px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;transition:all .15s;font-family:var(--font);}
+.btn.primary{background:var(--red-dark);color:#ffcccc;border:1px solid var(--red);}
+.btn.primary:hover{background:var(--red);color:#fff;}
+.btn.secondary{background:transparent;color:var(--mid);border:1px solid var(--border2);}
+.btn.secondary:hover{border-color:var(--blue);color:var(--blue);}
+.btn.danger{background:transparent;color:#ee7070;border:1px solid #4a1a1a;}
+.btn.danger:hover{background:#2a0e0e;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+
+/* TASK ITEMS */
+.task-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #0f1520;font-size:13px;}
+.task-item:last-child{border-bottom:none;}
+.task-cb{width:16px;height:16px;border:1px solid var(--muted);border-radius:3px;flex-shrink:0;margin-top:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;background:transparent;transition:all .1s;}
+.task-cb.done{background:var(--green);border-color:var(--green);color:#fff;font-size:10px;}
+.task-txt{flex:1;color:var(--text);}
+.task-txt.done{text-decoration:line-through;color:var(--muted);}
+.task-site{font-size:10px;color:var(--muted);margin-top:1px;}
+.task-actions{display:flex;gap:6px;opacity:0;transition:opacity .15s;}
+.task-item:hover .task-actions{opacity:1;}
+.task-del{font-size:10px;color:#ee7070;cursor:pointer;border:none;background:none;padding:2px 6px;}
+
+/* AI OUTPUT */
+.ai-output{background:#0a0e18;border:1px solid var(--border);border-radius:var(--radius);padding:18px;min-height:100px;font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap;}
+.ai-output.loading{color:var(--muted);font-style:italic;}
+
+/* INLINE EDIT */
+.editable{cursor:pointer;border-bottom:1px dashed transparent;transition:border-color .15s;}
+.editable:hover{border-bottom-color:var(--blue);}
+.inline-edit-input{background:#0d1220;border:1px solid var(--blue);border-radius:3px;color:var(--bright);font-size:12px;padding:2px 6px;font-family:var(--font);width:100%;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:24px;width:480px;max-width:90vw;max-height:85vh;overflow-y:auto;}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.modal-title{font-size:13px;font-weight:700;color:var(--bright);text-transform:uppercase;letter-spacing:.05em;}
+.modal-close{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;}
+.modal-close:hover{color:var(--bright);}
+.form-row{margin-bottom:12px;}
+
+/* NOTION SYNC indicator */
+.notion-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px;}
+.notion-dot.live{background:var(--green);}
+.notion-dot.syncing{background:var(--amber);}
+.notion-dot.error{background:var(--red);}
+
+/* MISC */
+.mono{font-family:'Courier New',monospace;font-size:11px;color:#7eb8f7;}
+.green-text{color:var(--green);}
+.red-text{color:var(--red-light);}
+.empty-state{padding:30px;text-align:center;color:var(--muted);font-size:13px;}
+a.link{color:var(--blue);text-decoration:none;font-weight:600;}
+a.link:hover{color:var(--red-light);}
+.section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:8px;}
+</style>
+</head>
+<body>
+
+<div class="loading-bar" id="loading-bar"></div>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="logo">Donna Digital <span>HQ</span></div>
+  <div class="hdr-right">
+    <span class="sync-status" id="sync-status"><span class="notion-dot live" id="notion-dot"></span>Notion live</span>
+    <button class="sync-btn" onclick="syncAll()">↺ Sync</button>
+    <span class="hdr-date" id="hdr-date"></span>
+  </div>
+</header>
+
+<!-- TABS -->
+<nav class="tabs">
+  <button class="tab active" onclick="switchTab('overview',this)">Overview</button>
+  <button class="tab" onclick="switchTab('affiliates',this)">Affiliate Programs</button>
+  <button class="tab" onclick="switchTab('content',this)">Content Queue</button>
+  <button class="tab" onclick="switchTab('sites',this)">Sites</button>
+  <button class="tab" onclick="switchTab('ai',this)">AI Draft Helper</button>
+  <button class="tab" onclick="switchTab('tasks',this)">Action Items</button>
+</nav>
+
+<!-- ═══ OVERVIEW ═══ -->
+<div class="panel active" id="panel-overview">
+  <div class="kpi-row" id="kpi-row"></div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-hd">Affiliate Program Status</div>
+      <div class="chart-wrap"><canvas id="chart-af"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-hd">Content Queue by Status</div>
+      <div class="chart-wrap"><canvas id="chart-cq"></canvas></div>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-left">Top Content Queue Items <span class="badge count" id="top5-badge">—</span></div></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>#</th><th>Title</th><th>Site</th><th>Status</th></tr></thead><tbody id="top5-tbody"></tbody></table></div>
+    </div>
+    <div class="card">
+      <div class="card-hd">Flags &amp; Reminders</div>
+      <div id="alerts-container"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ AFFILIATES ═══ -->
+<div class="panel" id="panel-affiliates">
+  <div class="filter-row">
+    <select id="af-net" onchange="renderAffiliates()"><option value="">All Networks</option></select>
+    <select id="af-status" onchange="renderAffiliates()"><option value="">All Statuses</option></select>
+    <input type="text" id="af-search" placeholder="Search programs..." oninput="renderAffiliates()" style="flex:1;min-width:140px;">
+    <button class="btn primary" onclick="openModal('af')">+ Add Program</button>
+  </div>
+  <div class="full card">
+    <div class="card-hd"><div class="card-hd-left">Affiliate Programs <span class="badge count" id="af-count">—</span></div></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Program</th><th>Network</th><th>Commission</th><th>Sites</th><th>Tracking ID</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="af-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CONTENT QUEUE ═══ -->
+<div class="panel" id="panel-content">
+  <div class="filter-row">
+    <select id="cq-site" onchange="renderContent()"><option value="">All Sites</option></select>
+    <select id="cq-status" onchange="renderContent()"><option value="">All Statuses</option></select>
+    <input type="text" id="cq-search" placeholder="Search posts..." oninput="renderContent()" style="flex:1;min-width:140px;">
+    <button class="btn primary" onclick="openModal('cq')">+ Add Post</button>
+  </div>
+  <div class="full card">
+    <div class="card-hd"><div class="card-hd-left">Content Queue <span class="badge count" id="cq-count">—</span></div></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>#</th><th>Title / Keyphrase</th><th>Site</th><th>Status</th><th>Affiliate Angle</th><th>Actions</th></tr></thead>
+        <tbody id="cq-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card full">
+    <div class="card-hd">TCG Post Checklist</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:4px;">
+      <div><div class="section-label">Content</div><ul style="list-style:none;font-size:12px;line-height:2.1;color:var(--text);">
+        <li>✅ Comparison table + badges</li><li>✅ Orange Amazon buy buttons</li><li>✅ Star ratings</li>
+        <li>✅ Pros/cons grid</li><li>✅ Buy-this-if / Skip-this-if</li><li>✅ 5-question FAQ</li><li>✅ Verdict callout</li>
+      </ul></div>
+      <div><div class="section-label">SEO (Yoast)</div><ul style="list-style:none;font-size:12px;line-height:2.1;color:var(--text);">
+        <li>✅ Focus keyphrase in field</li><li>✅ Meta desc &lt;156 chars</li><li>✅ Keyphrase in first paragraph</li>
+        <li>✅ Keyphrase in 2+ H2s</li><li>✅ Density 5+ uses</li><li>✅ 1500+ words</li>
+      </ul></div>
+      <div><div class="section-label">Technical</div><ul style="list-style:none;font-size:12px;line-height:2.1;color:var(--text);">
+        <li>✅ Affiliate disclosure</li><li>✅ 2+ dofollow links</li><li>✅ Featured image via WP REST</li>
+        <li>✅ Alt text = keyphrase</li><li>✅ JS injection (not typing)</li><li>✅ Correct Amazon tag</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SITES ═══ -->
+<div class="panel" id="panel-sites">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-label">ThatComputerGirl.com</div><div class="kpi-val" style="font-size:16px;">GA4: 415946790</div><div class="kpi-sub">thatcompute07-website-20</div></div>
+    <div class="kpi b"><div class="kpi-label">AutomobileBrand.com</div><div class="kpi-val" style="font-size:16px;">GA4: 360584404</div><div class="kpi-sub">autobrand-20</div></div>
+    <div class="kpi" style="border-left-color:var(--purple)"><div class="kpi-label">JoeysHairSalon.com</div><div class="kpi-val" style="font-size:16px;">GA4: 364970541</div><div class="kpi-sub">salon0c7-20</div></div>
+    <div class="kpi g"><div class="kpi-label">ArkLaTexRides.com</div><div class="kpi-val" style="font-size:16px;">GA4: 536971967</div><div class="kpi-sub">altrides-website-20</div></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-hd"><span class="sp tcg">TCG</span> ThatComputerGirl.com</div>
+      <table class="tbl"><tbody>
+        <tr><td class="muted" style="color:var(--muted);width:120px;">Niche</td><td>Tech / Work-From-Home</td></tr>
+        <tr><td style="color:var(--muted);">Priority</td><td style="color:var(--red-light);font-weight:700;">Highest — #1 revenue site</td></tr>
+        <tr><td style="color:var(--muted);">Newsletter</td><td>Tribe Notes · Mailchimp · Saturday</td></tr>
+        <tr><td style="color:var(--muted);">Email move</td><td>Migrate to MailerLite when ready</td></tr>
+        <tr><td style="color:var(--muted);">Noindex</td><td style="color:var(--red-light);">⚠️ Homepage needs correcting</td></tr>
+        <tr><td style="color:var(--muted);">Dashboard</td><td><a class="link" href="https://dgfrench.github.io/Sites-Dashboard/dashboard.html" target="_blank">dgfrench.github.io/Sites-Dashboard</a></td></tr>
+      </tbody></table>
+    </div>
+    <div class="card">
+      <div class="card-hd"><span class="sp auto">AUTO</span> AutomobileBrand.com</div>
+      <table class="tbl"><tbody>
+        <tr><td style="color:var(--muted);width:120px;">Posts</td><td>~22,000</td></tr>
+        <tr><td style="color:var(--muted);">Traffic</td><td style="color:var(--red-light);">⚠️ Mostly bots / wrong niche</td></tr>
+        <tr><td style="color:var(--muted);">Pivot</td><td>Dash cams, car accessories (Amazon)</td></tr>
+        <tr><td style="color:var(--muted);">Singapore</td><td>Explore Amazon OneLink (amazon.sg)</td></tr>
+        <tr><td style="color:var(--muted);">Awin active</td><td>OEDRO · CARLUEX · Mooncool</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-hd"><span class="sp joey">JOEY</span> JoeysHairSalon.com</div>
+      <table class="tbl"><tbody>
+        <tr><td style="color:var(--muted);width:120px;">Niche</td><td>Beauty / Hair</td></tr>
+        <tr><td style="color:var(--muted);">Email</td><td>MailerLite (free tier)</td></tr>
+        <tr><td style="color:var(--muted);">Amazon links</td><td style="color:var(--red-light);">⚠️ Affiliate links need correcting</td></tr>
+      </tbody></table>
+    </div>
+    <div class="card">
+      <div class="card-hd"><span class="sp ark">ARK</span> ArkLaTexRides.com</div>
+      <table class="tbl"><tbody>
+        <tr><td style="color:var(--muted);width:120px;">Niche</td><td>Regional Transport / Auto</td></tr>
+        <tr><td style="color:var(--muted);">GA4</td><td style="color:var(--red-light);">⚠️ 536971967 data flow needs verification</td></tr>
+        <tr><td style="color:var(--muted);">Cleanup</td><td>Footer, sidebar, ColorMag layout remaining</td></tr>
+        <tr><td style="color:var(--muted);">Email</td><td>MailerLite (free tier)</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ AI DRAFT ═══ -->
+<div class="panel" id="panel-ai">
+  <div class="two-col">
+    <div class="card">
+      <div class="card-hd">Generate Content</div>
+      <div class="form-row"><label class="form-label">Site</label>
+        <select class="form-input" id="ai-site">
+          <option>ThatComputerGirl.com</option><option>AutomobileBrand.com</option>
+          <option>JoeysHairSalon.com</option><option>ArkLaTexRides.com</option>
+        </select></div>
+      <div class="form-row"><label class="form-label">Output Type</label>
+        <select class="form-input" id="ai-type">
+          <option value="outline">Full Post Outline</option>
+          <option value="intro">Intro Paragraph (Yoast)</option>
+          <option value="meta">Meta Description (&lt;156 chars)</option>
+          <option value="faq">5-Question FAQ</option>
+          <option value="verdict">Verdict / Callout Box</option>
+          <option value="newsletter">Tribe Notes Blurb</option>
+          <option value="social">Social Teaser (Reddit/Quora)</option>
+        </select></div>
+      <div class="form-row"><label class="form-label">Topic / Keyphrase</label>
+        <input class="form-input" type="text" id="ai-topic" placeholder="e.g. best webcams for video calls WFH"></div>
+      <div class="form-row"><label class="form-label">Extra Context (optional)</label>
+        <textarea class="form-input" id="ai-ctx" rows="3" placeholder="Products, affiliate angle, audience notes..."></textarea></div>
+      <div class="btn-row">
+        <button class="btn primary" id="ai-gen-btn" onclick="generateDraft()">Generate →</button>
+      </div>
+      <div style="margin-top:14px;">
+        <div class="section-label">Quick Launch</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+          <button class="btn secondary" style="font-size:10px;" onclick="quickPrompt('webcam')">Webcam Outline</button>
+          <button class="btn secondary" style="font-size:10px;" onclick="quickPrompt('keyboard')">Keyboard Outline</button>
+          <button class="btn secondary" style="font-size:10px;" onclick="quickPrompt('stand')">Laptop Stand</button>
+          <button class="btn secondary" style="font-size:10px;" onclick="quickPrompt('headphones')">Headphones</button>
+          <button class="btn secondary" style="font-size:10px;" onclick="quickPrompt('ringlight')">Ring Light</button>
+          <button class="btn secondary" style="font-size:10px;" onclick="quickPrompt('newsletter')">Newsletter Blurb</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-left">Output <span class="badge green" id="ai-badge" style="display:none">Ready</span></div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn secondary" style="font-size:10px;" onclick="copyAI()">Copy</button>
+          <button class="btn secondary" style="font-size:10px;" onclick="clearAI()">Clear</button>
+        </div>
+      </div>
+      <div class="ai-output" id="ai-output">Fill in the form and hit Generate.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TASKS ═══ -->
+<div class="panel" id="panel-tasks">
+  <div class="two-col">
+    <div class="card"><div class="card-hd">Critical / High Priority</div><div id="tasks-high"></div></div>
+    <div class="card"><div class="card-hd">Medium Priority</div><div id="tasks-med"></div></div>
+  </div>
+  <div class="card full"><div class="card-hd">Backlog</div><div id="tasks-low"></div></div>
+  <div class="card full">
+    <div class="card-hd">Add Action Item</div>
+    <div class="form-grid">
+      <div><label class="form-label">Task</label><input class="form-input" type="text" id="nt-text" placeholder="Describe the task..."></div>
+      <div><label class="form-label">Site</label>
+        <select class="form-input" id="nt-site">
+          <option>ThatComputerGirl.com</option><option>AutomobileBrand.com</option>
+          <option>JoeysHairSalon.com</option><option>ArkLaTexRides.com</option><option>All Sites</option>
+        </select></div>
+      <div><label class="form-label">Priority</label>
+        <select class="form-input" id="nt-pri">
+          <option value="high">High</option><option value="med" selected>Medium</option><option value="low">Backlog</option>
+        </select></div>
+    </div>
+    <button class="btn primary" onclick="addTask()">+ Add Task</button>
+  </div>
+</div>
+
+<!-- ═══ MODAL: ADD AFFILIATE ═══ -->
+<div class="modal-overlay" id="modal-af">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">Add Affiliate Program</span><button class="modal-close" onclick="closeModal('af')">×</button></div>
+    <div class="form-row"><label class="form-label">Program Name</label><input class="form-input" type="text" id="af-new-name"></div>
+    <div class="form-grid">
+      <div><label class="form-label">Network</label><input class="form-input" type="text" id="af-new-network" placeholder="Amazon, Awin, Direct..."></div>
+      <div><label class="form-label">Commission</label><input class="form-input" type="text" id="af-new-commission" placeholder="e.g. 5% or 50%/12mo"></div>
+    </div>
+    <div class="form-grid">
+      <div><label class="form-label">Sites</label><input class="form-input" type="text" id="af-new-sites" placeholder="TCG, Auto..."></div>
+      <div><label class="form-label">Tracking ID</label><input class="form-input" type="text" id="af-new-tracking"></div>
+    </div>
+    <div class="form-row"><label class="form-label">Status</label>
+      <select class="form-input" id="af-new-status"><option>Approved</option><option>Pending</option><option>Paused</option></select></div>
+    <div class="form-row"><label class="form-label">Notes</label><textarea class="form-input" id="af-new-notes" rows="2"></textarea></div>
+    <div class="btn-row"><button class="btn primary" onclick="saveNewAffiliate()">Save to Notion →</button><button class="btn secondary" onclick="closeModal('af')">Cancel</button></div>
+    <div id="af-modal-msg" style="margin-top:10px;font-size:12px;"></div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: ADD CONTENT ═══ -->
+<div class="modal-overlay" id="modal-cq">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">Add Content Post</span><button class="modal-close" onclick="closeModal('cq')">×</button></div>
+    <div class="form-row"><label class="form-label">Post Title</label><input class="form-input" type="text" id="cq-new-name"></div>
+    <div class="form-grid">
+      <div><label class="form-label">Site</label>
+        <select class="form-input" id="cq-new-site">
+          <option>thatcomputergirl.com</option><option>automoblebrand.com</option><option>joeyshairsalon.com</option><option>arklatexrides.com</option>
+        </select></div>
+      <div><label class="form-label">Status</label>
+        <select class="form-input" id="cq-new-status"><option>Idea</option><option>Outline</option><option>Draft</option><option>Ready</option><option>Live</option></select></div>
+    </div>
+    <div class="form-row"><label class="form-label">Keyphrase</label><input class="form-input" type="text" id="cq-new-key" placeholder="Focus keyphrase for Yoast"></div>
+    <div class="form-row"><label class="form-label">Affiliate Programs Used</label><input class="form-input" type="text" id="cq-new-af" placeholder="e.g. Amazon Associates, Kit"></div>
+    <div class="btn-row"><button class="btn primary" onclick="saveNewContent()">Save to Notion →</button><button class="btn secondary" onclick="closeModal('cq')">Cancel</button></div>
+    <div id="cq-modal-msg" style="margin-top:10px;font-size:12px;"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════
+// CONFIG
+// ═══════════════════════════════
+const NOTION_TOKEN = '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';
+const AF_DB = '36a6c982604d807690f2e2df2a2323b4';
+const CQ_DB = '36a6c982604d8083b877d9deeb5c03ac';
+const NOTION_VER = '2022-06-28';
+
+// ═══════════════════════════════
+// STATE
+// ═══════════════════════════════
+let affiliates = [];
+let content = [];
+let tasks = JSON.parse(localStorage.getItem('donna_tasks') || 'null') || {
+  high:[
+    {id:1,text:'Correct homepage noindex on ThatComputerGirl.com',site:'ThatComputerGirl.com',done:false},
+    {id:2,text:'Fix Amazon affiliate links on JoeysHairSalon.com',site:'JoeysHairSalon.com',done:false},
+    {id:3,text:'Verify ArkLaTexRides GA4 property 536971967 data flow',site:'ArkLaTexRides.com',done:false},
+    {id:4,text:'Write Best Webcams for Video Calls WFH post',site:'ThatComputerGirl.com',done:false},
+  ],
+  med:[
+    {id:5,text:'Develop AutomobileBrand.com pivot strategy (dash cams)',site:'AutomobileBrand.com',done:false},
+    {id:6,text:'Investigate Amazon OneLink for AutomobileBrand.com (Singapore traffic)',site:'AutomobileBrand.com',done:false},
+    {id:7,text:'Reapply to Semrush affiliate program',site:'ThatComputerGirl.com',done:false},
+    {id:8,text:'Complete ArkLaTexRides footer/sidebar/ColorMag cleanup',site:'ArkLaTexRides.com',done:false},
+  ],
+  low:[
+    {id:9,text:'Build GitHub Actions agent for Tribe Notes automation',site:'ThatComputerGirl.com',done:false},
+    {id:10,text:'Plan Mailchimp → MailerLite migration for TCG',site:'ThatComputerGirl.com',done:false},
+    {id:11,text:'Write Best Mechanical Keyboards post',site:'ThatComputerGirl.com',done:false},
+    {id:12,text:'Write Best Laptop Stands post',site:'ThatComputerGirl.com',done:false},
+    {id:13,text:'Write Best Headphones for WFH post',site:'ThatComputerGirl.com',done:false},
+    {id:14,text:'Write Best Ring Lights post',site:'ThatComputerGirl.com',done:false},
+  ]
+};
+let taskIdSeq = Math.max(...Object.values(tasks).flat().map(t=>t.id), 0) + 1;
+
+const DARK_LEGEND = {position:'bottom',labels:{font:{size:11},padding:14,color:'#5a6a8a'}};
+let afChart, cqChart;
+
+// ═══════════════════════════════
+// NOTION API
+// ═══════════════════════════════
+async function notionQuery(dbId) {
+  const r = await fetch(`https://api.notion.com/v1/databases/${dbId}/query`, {
+    method:'POST',
+    headers:{'Authorization':`Bearer ${NOTION_TOKEN}`,'Notion-Version':NOTION_VER,'Content-Type':'application/json'},
+    body: JSON.stringify({page_size:100})
+  });
+  if (!r.ok) throw new Error(`Notion API ${r.status}`);
+  const d = await r.json();
+  return d.results || [];
+}
+
+async function notionCreate(dbId, properties) {
+  const r = await fetch('https://api.notion.com/v1/pages', {
+    method:'POST',
+    headers:{'Authorization':`Bearer ${NOTION_TOKEN}`,'Notion-Version':NOTION_VER,'Content-Type':'application/json'},
+    body: JSON.stringify({parent:{database_id:dbId}, properties})
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.message||r.status); }
+  return r.json();
+}
+
+async function notionUpdate(pageId, properties) {
+  const r = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
+    method:'PATCH',
+    headers:{'Authorization':`Bearer ${NOTION_TOKEN}`,'Notion-Version':NOTION_VER,'Content-Type':'application/json'},
+    body: JSON.stringify({properties})
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.message||r.status); }
+  return r.json();
+}
+
+// ═══════════════════════════════
+// PROPERTY HELPERS
+// ═══════════════════════════════
+function getProp(page, name) {
+  const p = page.properties?.[name];
+  if (!p) return '';
+  switch(p.type) {
+    case 'title': return p.title?.map(t=>t.plain_text).join('') || '';
+    case 'rich_text': return p.rich_text?.map(t=>t.plain_text).join('') || '';
+    case 'select': return p.select?.name || '';
+    case 'multi_select': return p.multi_select?.map(s=>s.name).join(', ') || '';
+    case 'number': return p.number ?? '';
+    case 'checkbox': return p.checkbox;
+    case 'url': return p.url || '';
+    case 'email': return p.email || '';
+    case 'date': return p.date?.start || '';
+    default: return '';
+  }
+}
+
+function parseAffiliates(pages) {
+  return pages.map(p => ({
+    id: p.id,
+    name: getProp(p,'Name'),
+    network: getProp(p,'Network'),
+    status: getProp(p,'Status'),
+    commission: getProp(p,'Commission'),
+    sites: getProp(p,'Sites'),
+    tracking: getProp(p,'Tracking ID') || getProp(p,'Tracking') || getProp(p,'ID') || '',
+    notes: getProp(p,'Notes') || ''
+  })).filter(a=>a.name);
+}
+
+function parseContent(pages) {
+  return pages.map((p,i) => ({
+    id: p.id,
+    name: getProp(p,'Name'),
+    site: getProp(p,'Site'),
+    status: getProp(p,'Status'),
+    keyphrase: getProp(p,'Keyphrase'),
+    affiliate: getProp(p,'Affiliate Programs Used'),
+    publish: getProp(p,'Publish') || getProp(p,'Published') || '',
+    priority: i+1
+  })).filter(c=>c.name);
+}
+
+// ═══════════════════════════════
+// SYNC
+// ═══════════════════════════════
+function setLoading(on) {
+  const bar = document.getElementById('loading-bar');
+  const dot = document.getElementById('notion-dot');
+  const status = document.getElementById('sync-status');
+  bar.style.width = on ? '70%' : '100%';
+  if (!on) setTimeout(()=>{ bar.style.width='0'; },400);
+  dot.className = 'notion-dot ' + (on?'syncing':'live');
+  status.innerHTML = `<span class="notion-dot ${on?'syncing':'live'}" id="notion-dot"></span>${on?'Syncing...':'Notion live'}`;
+}
+
+function setError() {
+  document.getElementById('sync-status').innerHTML = '<span class="notion-dot error"></span>Sync error';
+}
+
+async function syncAll() {
+  setLoading(true);
+  try {
+    const [afPages, cqPages] = await Promise.all([notionQuery(AF_DB), notionQuery(CQ_DB)]);
+    affiliates = parseAffiliates(afPages);
+    content = parseContent(cqPages);
+    populateFilters();
+    renderAll();
+    setLoading(false);
+  } catch(e) {
+    setLoading(false);
+    setError();
+    console.error('Sync error:', e);
+  }
+}
+
+// ═══════════════════════════════
+// FILTERS
+// ═══════════════════════════════
+function populateFilters() {
+  const nets = [...new Set(affiliates.map(a=>a.network).filter(Boolean))];
+  const afNetSel = document.getElementById('af-net');
+  afNetSel.innerHTML = '<option value="">All Networks</option>' + nets.map(n=>`<option>${n}</option>`).join('');
+
+  const afStats = [...new Set(affiliates.map(a=>a.status).filter(Boolean))];
+  const afStatSel = document.getElementById('af-status');
+  afStatSel.innerHTML = '<option value="">All Statuses</option>' + afStats.map(s=>`<option>${s}</option>`).join('');
+
+  const sites = [...new Set(content.map(c=>c.site).filter(Boolean))];
+  const cqSiteSel = document.getElementById('cq-site');
+  cqSiteSel.innerHTML = '<option value="">All Sites</option>' + sites.map(s=>`<option>${s}</option>`).join('');
+
+  const cqStats = [...new Set(content.map(c=>c.status).filter(Boolean))];
+  const cqStatSel = document.getElementById('cq-status');
+  cqStatSel.innerHTML = '<option value="">All Statuses</option>' + cqStats.map(s=>`<option>${s}</option>`).join('');
+}
+
+// ═══════════════════════════════
+// RENDER HELPERS
+// ═══════════════════════════════
+function statusBadge(s) {
+  if (!s) return '<span class="badge gray">—</span>';
+  const map = {
+    'Approved':'green','Active':'green','Live':'green','Ready':'green',
+    'Pending':'amber','Draft':'blue','Outline':'blue',
+    'Idea':'purple','Paused':'gray','Fix':'red'
+  };
+  const cls = map[s] || 'gray';
+  return `<span class="badge ${cls}">${s}</span>`;
+}
+
+function sitePill(s) {
+  if (!s) return '';
+  const str = s.toLowerCase();
+  const cls = str.includes('computer')||str==='tcg'?'tcg':
+              str.includes('auto')?'auto':
+              str.includes('joey')||str.includes('hair')?'joey':
+              str.includes('ark')||str.includes('rides')?'ark':'';
+  const label = str.includes('computer')?'TCG':str.includes('auto')?'AUTO':str.includes('joey')||str.includes('hair')?'JOEY':str.includes('ark')||str.includes('rides')?'ARK':s;
+  return `<span class="sp ${cls}">${label}</span>`;
+}
+
+function sitesPills(str) {
+  if (!str) return '—';
+  return str.split(',').map(s=>sitePill(s.trim())).join(' ');
+}
+
+// ═══════════════════════════════
+// RENDER AFFILIATES
+// ═══════════════════════════════
+function renderAffiliates() {
+  const net = document.getElementById('af-net').value;
+  const stat = document.getElementById('af-status').value;
+  const q = document.getElementById('af-search').value.toLowerCase();
+  const filtered = affiliates.filter(a =>
+    (!net || a.network===net) &&
+    (!stat || a.status===stat) &&
+    (!q || a.name.toLowerCase().includes(q) || a.network.toLowerCase().includes(q))
+  );
+  document.getElementById('af-count').textContent = filtered.length;
+  const tbody = document.getElementById('af-tbody');
+  if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No programs found</td></tr>'; return; }
+  tbody.innerHTML = filtered.map(a=>`
+    <tr>
+      <td style="font-weight:700;color:var(--bright);">${a.name}</td>
+      <td>${a.network||'—'}</td>
+      <td class="green-text" style="font-weight:700;">${a.commission||'—'}</td>
+      <td>${sitesPills(a.sites)}</td>
+      <td class="mono">${a.tracking||'—'}</td>
+      <td>${statusBadge(a.status)}</td>
+      <td><button class="btn danger" style="padding:3px 8px;font-size:10px;" onclick="deleteRow('af','${a.id}',this)">Delete</button></td>
+    </tr>`).join('');
+}
+
+// ═══════════════════════════════
+// RENDER CONTENT
+// ═══════════════════════════════
+function renderContent() {
+  const site = document.getElementById('cq-site').value;
+  const stat = document.getElementById('cq-status').value;
+  const q = document.getElementById('cq-search').value.toLowerCase();
+  const filtered = content.filter(c =>
+    (!site || c.site===site) &&
+    (!stat || c.status===stat) &&
+    (!q || c.name.toLowerCase().includes(q) || (c.keyphrase||'').toLowerCase().includes(q))
+  );
+  document.getElementById('cq-count').textContent = filtered.length;
+  const tbody = document.getElementById('cq-tbody');
+  if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No posts found</td></tr>'; return; }
+  tbody.innerHTML = filtered.map((c,i)=>`
+    <tr>
+      <td><span class="pchip p${Math.min(i+1,4)}">${i+1}</span></td>
+      <td>
+        <div style="font-weight:700;color:var(--bright);font-size:13px;">${c.name}</div>
+        ${c.keyphrase?`<div class="mono" style="margin-top:2px;">${c.keyphrase}</div>`:''}
+      </td>
+      <td>${sitePill(c.site)}</td>
+      <td>${statusBadge(c.status)}</td>
+      <td style="font-size:12px;color:var(--mid);">${c.affiliate||'—'}</td>
+      <td><button class="btn danger" style="padding:3px 8px;font-size:10px;" onclick="deleteRow('cq','${c.id}',this)">Delete</button></td>
+    </tr>`).join('');
+}
+
+// ═══════════════════════════════
+// RENDER OVERVIEW
+// ═══════════════════════════════
+function renderOverview() {
+  // KPIs
+  const kpiRow = document.getElementById('kpi-row');
+  const activeAf = affiliates.filter(a=>a.status==='Approved'||a.status==='Active').length;
+  const pendingAf = affiliates.filter(a=>a.status==='Pending').length;
+  kpiRow.innerHTML = `
+    <div class="kpi"><div class="kpi-label">Active Sites</div><div class="kpi-val">4</div><div class="kpi-sub">TCG · Auto · Joey · Ark</div></div>
+    <div class="kpi g"><div class="kpi-label">Affiliate Programs</div><div class="kpi-val">${affiliates.length||'—'}</div><div class="kpi-sub">${activeAf} active</div></div>
+    <div class="kpi a"><div class="kpi-label">Pending Approvals</div><div class="kpi-val">${pendingAf||'—'}</div><div class="kpi-sub">Awaiting response</div></div>
+    <div class="kpi b"><div class="kpi-label">Newsletter</div><div class="kpi-val">2,635</div><div class="kpi-sub">Mailchimp · Saturday</div></div>
+    <div class="kpi"><div class="kpi-label">Posts in Queue</div><div class="kpi-val">${content.length||'—'}</div><div class="kpi-sub">Across all sites</div></div>`;
+
+  // Affiliate chart
+  const afStats = {};
+  affiliates.forEach(a=>{ const s=a.status||'Unknown'; afStats[s]=(afStats[s]||0)+1; });
+  const afCtx = document.getElementById('chart-af').getContext('2d');
+  if (afChart) afChart.destroy();
+  afChart = new Chart(afCtx,{type:'doughnut',data:{labels:Object.keys(afStats),datasets:[{data:Object.values(afStats),backgroundColor:['#2ea86a','#d4900a','#4a90d9','#7a5ad4','#2a3550'],borderWidth:2,borderColor:'#111827'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:DARK_LEGEND},cutout:'65%'}});
+
+  // Content chart
+  const cqStats = {};
+  content.forEach(c=>{ const s=c.status||'Unknown'; cqStats[s]=(cqStats[s]||0)+1; });
+  const cqCtx = document.getElementById('chart-cq').getContext('2d');
+  if (cqChart) cqChart.destroy();
+  cqChart = new Chart(cqCtx,{type:'doughnut',data:{labels:Object.keys(cqStats),datasets:[{data:Object.values(cqStats),backgroundColor:['#2ea86a','#d4900a','#4a90d9','#e03c3c','#7a5ad4','#2a3550'],borderWidth:2,borderColor:'#111827'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:DARK_LEGEND},cutout:'65%'}});
+
+  // Top 5
+  const top5 = content.slice(0,5);
+  document.getElementById('top5-badge').textContent = top5.length;
+  document.getElementById('top5-tbody').innerHTML = top5.map((c,i)=>`
+    <tr><td><span class="pchip p${Math.min(i+1,4)}">${i+1}</span></td>
+    <td style="font-size:12px;color:var(--bright);">${c.name}</td>
+    <td>${sitePill(c.site)}</td>
+    <td>${statusBadge(c.status)}</td></tr>`).join('') || '<tr><td colspan="4" class="empty-state">No data yet</td></tr>';
+
+  // Alerts
+  document.getElementById('alerts-container').innerHTML = `
+    <div class="alert crit"><strong>AutomobileBrand.com</strong> — 22k posts, mostly bot traffic. Pivot to automotive Amazon products needed.</div>
+    <div class="alert warn"><strong>ArkLaTexRides GA4</strong> (536971967) — data flow needs verification.</div>
+    <div class="alert warn"><strong>JoeysHairSalon</strong> — Amazon affiliate links need correcting.</div>
+    <div class="alert info"><strong>ThatComputerGirl.com</strong> — homepage noindex needs correcting.</div>
+    <div class="alert info"><strong>Semrush</strong> — reapplication recommended. WP Rocket &amp; Surfer pending.</div>`;
+}
+
+// ═══════════════════════════════
+// RENDER TASKS (localStorage)
+// ═══════════════════════════════
+function saveTasks() { localStorage.setItem('donna_tasks', JSON.stringify(tasks)); }
+
+function renderTasks() {
+  ['high','med','low'].forEach(level => {
+    const el = document.getElementById('tasks-'+level);
+    if (!tasks[level].length) { el.innerHTML = '<div class="empty-state">All clear</div>'; return; }
+    el.innerHTML = tasks[level].map(t=>`
+      <div class="task-item">
+        <div class="task-cb ${t.done?'done':''}" onclick="toggleTask('${level}',${t.id})">${t.done?'✓':''}</div>
+        <div style="flex:1;">
+          <div class="task-txt ${t.done?'done':''}">${t.text}</div>
+          <div class="task-site">${t.site}</div>
+        </div>
+        <div class="task-actions">
+          <button class="task-del" onclick="deleteTask('${level}',${t.id})">✕</button>
+        </div>
+      </div>`).join('');
+  });
+}
+
+function toggleTask(level, id) {
+  const t = tasks[level].find(t=>t.id===id);
+  if (t) { t.done=!t.done; saveTasks(); renderTasks(); }
+}
+
+function deleteTask(level, id) {
+  tasks[level] = tasks[level].filter(t=>t.id!==id);
+  saveTasks(); renderTasks();
+}
+
+function addTask() {
+  const text = document.getElementById('nt-text').value.trim();
+  if (!text) return;
+  const site = document.getElementById('nt-site').value;
+  const pri = document.getElementById('nt-pri').value;
+  tasks[pri].push({id:taskIdSeq++, text, site, done:false});
+  document.getElementById('nt-text').value = '';
+  saveTasks(); renderTasks();
+}
+
+// ═══════════════════════════════
+// ADD TO NOTION
+// ═══════════════════════════════
+async function saveNewAffiliate() {
+  const name = document.getElementById('af-new-name').value.trim();
+  if (!name) return;
+  const msg = document.getElementById('af-modal-msg');
+  msg.style.color='var(--amber)'; msg.textContent='Saving to Notion...';
+  try {
+    await notionCreate(AF_DB, {
+      'Name':{title:[{text:{content:name}}]},
+      'Network':{select:{name:document.getElementById('af-new-network').value||'Other'}},
+      'Commission':{rich_text:[{text:{content:document.getElementById('af-new-commission').value||''}}]},
+      'Sites':{rich_text:[{text:{content:document.getElementById('af-new-sites').value||''}}]},
+      'Tracking ID':{rich_text:[{text:{content:document.getElementById('af-new-tracking').value||''}}]},
+      'Status':{select:{name:document.getElementById('af-new-status').value}},
+      'Notes':{rich_text:[{text:{content:document.getElementById('af-new-notes').value||''}}]},
+    });
+    msg.style.color='var(--green)'; msg.textContent='Saved! Syncing...';
+    await syncAll();
+    closeModal('af');
+  } catch(e) { msg.style.color='var(--red-light)'; msg.textContent='Error: '+e.message; }
+}
+
+async function saveNewContent() {
+  const name = document.getElementById('cq-new-name').value.trim();
+  if (!name) return;
+  const msg = document.getElementById('cq-modal-msg');
+  msg.style.color='var(--amber)'; msg.textContent='Saving to Notion...';
+  try {
+    await notionCreate(CQ_DB, {
+      'Name':{title:[{text:{content:name}}]},
+      'Site':{select:{name:document.getElementById('cq-new-site').value}},
+      'Status':{select:{name:document.getElementById('cq-new-status').value}},
+      'Keyphrase':{rich_text:[{text:{content:document.getElementById('cq-new-key').value||''}}]},
+      'Affiliate Programs Used':{rich_text:[{text:{content:document.getElementById('cq-new-af').value||''}}]},
+    });
+    msg.style.color='var(--green)'; msg.textContent='Saved! Syncing...';
+    await syncAll();
+    closeModal('cq');
+  } catch(e) { msg.style.color='var(--red-light)'; msg.textContent='Error: '+e.message; }
+}
+
+// ═══════════════════════════════
+// DELETE
+// ═══════════════════════════════
+async function deleteRow(type, id, btn) {
+  if (!confirm('Archive this record in Notion?')) return;
+  btn.disabled=true; btn.textContent='...';
+  try {
+    await fetch(`https://api.notion.com/v1/pages/${id}`, {
+      method:'PATCH',
+      headers:{'Authorization':`Bearer ${NOTION_TOKEN}`,'Notion-Version':NOTION_VER,'Content-Type':'application/json'},
+      body: JSON.stringify({archived:true})
+    });
+    await syncAll();
+  } catch(e) { btn.disabled=false; btn.textContent='Delete'; alert('Error: '+e.message); }
+}
+
+// ═══════════════════════════════
+// AI DRAFT
+// ═══════════════════════════════
+async function generateDraft() {
+  const topic = document.getElementById('ai-topic').value.trim();
+  if (!topic) { alert('Enter a topic first.'); return; }
+  const btn = document.getElementById('ai-gen-btn');
+  const out = document.getElementById('ai-output');
+  btn.disabled=true; btn.textContent='Generating...';
+  out.className='ai-output loading'; out.textContent='Thinking...';
+  const site = document.getElementById('ai-site').value;
+  const type = document.getElementById('ai-type').value;
+  const ctx = document.getElementById('ai-ctx').value;
+  const siteCtx = {
+    'ThatComputerGirl.com':'Tech/WFH niche. Audience: remote workers. Amazon tag: thatcompute07-website-20. Tone: practical, direct. Posts need comparison tables, orange buy buttons, star ratings, pros/cons grids, buy-this-if boxes, 5-question FAQs, verdict callouts.',
+    'AutomobileBrand.com':'Automotive niche pivoting to Amazon product reviews. Amazon tag: autobrand-20.',
+    'JoeysHairSalon.com':'Beauty/hair niche. Amazon tag: salon0c7-20.',
+    'ArkLaTexRides.com':'Regional transport/auto for ArkLaTex region. Amazon tag: altrides-website-20.'
+  };
+  const typeMap = {
+    outline:'Write a detailed SEO content outline: H1, hook intro, 5-7 H2 sections with bullets, comparison table placeholder, 5-question FAQ, verdict section.',
+    intro:'Write a 60-80 word intro with the keyphrase in the first sentence. Hook with a pain point, promise a solution.',
+    meta:'Write a meta description under 156 characters with the keyphrase. Just the text, nothing else.',
+    faq:'Write exactly 5 FAQ questions and answers. Format as Q: / A: pairs, 2-3 sentences each.',
+    verdict:'Write a verdict callout: bold headline, 2-3 sentence recommendation, who it\'s for, who should skip.',
+    newsletter:'Write an 80-100 word Tribe Notes Saturday newsletter blurb. Casual but smart. Tease the post, CTA to read.',
+    social:'Write a 3-4 sentence Reddit/Quora teaser. Conversational, not salesy, sounds like a real recommendation.'
+  };
+  const prompt = `You are a content strategist for ${site}. Context: ${siteCtx[site]}\n\nTask: ${typeMap[type]}\n\nTopic/keyphrase: "${topic}"${ctx?'\n\nExtra context: '+ctx:''}\n\nOutput only the requested content — no preamble.`;
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+    });
+    const d = await r.json();
+    out.className='ai-output';
+    out.textContent = d.content?.map(b=>b.text||'').join('')||'No response.';
+    document.getElementById('ai-badge').style.display='inline-block';
+  } catch(e) { out.className='ai-output'; out.textContent='Error: '+e.message; }
+  btn.disabled=false; btn.textContent='Generate →';
+}
+
+function quickPrompt(t) {
+  const map={webcam:{topic:'best webcams for video calls WFH',type:'outline'},keyboard:{topic:'best mechanical keyboards WFH',type:'outline'},stand:{topic:'best laptop stands WFH',type:'outline'},headphones:{topic:'best headphones for WFH',type:'outline'},ringlight:{topic:'best ring lights for video calls',type:'outline'},newsletter:{topic:'WFH gear and productivity tips',type:'newsletter'}};
+  const q=map[t]; if(!q) return;
+  document.getElementById('ai-site').value='ThatComputerGirl.com';
+  document.getElementById('ai-type').value=q.type;
+  document.getElementById('ai-topic').value=q.topic;
+  document.getElementById('ai-ctx').value='';
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-ai').classList.add('active');
+  document.querySelectorAll('.tab')[4].classList.add('active');
+  generateDraft();
+}
+
+function copyAI() { navigator.clipboard.writeText(document.getElementById('ai-output').textContent).then(()=>{const b=event.currentTarget;b.textContent='Copied!';setTimeout(()=>b.textContent='Copy',1500);}); }
+function clearAI() { document.getElementById('ai-output').textContent='Fill in the form and hit Generate.'; document.getElementById('ai-output').className='ai-output'; document.getElementById('ai-badge').style.display='none'; }
+
+// ═══════════════════════════════
+// MODALS
+// ═══════════════════════════════
+function openModal(t) { document.getElementById('modal-'+t).classList.add('open'); }
+function closeModal(t) { document.getElementById('modal-'+t).classList.remove('open'); document.getElementById(t+'-modal-msg').textContent=''; }
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); }));
+
+// ═══════════════════════════════
+// TABS
+// ═══════════════════════════════
+function switchTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ═══════════════════════════════
+// RENDER ALL
+// ═══════════════════════════════
+function renderAll() {
+  renderOverview();
+  renderAffiliates();
+  renderContent();
+  renderTasks();
+}
+
+// ═══════════════════════════════
+// INIT
+// ═══════════════════════════════
+document.getElementById('hdr-date').textContent = new Date().toLocaleDateString('en-US',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
+renderTasks();
+syncAll();
+</script>
+</body>
+</html>
