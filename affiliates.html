@@ -403,6 +403,10 @@
 
     <div class="sidebar-section">
       <div class="nav-label">Navigation</div>
+      <a class="nav-link" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Home
+      </a>
       <a class="nav-link" href="dashboard.html">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
         Sites overview
@@ -411,13 +415,17 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
         Affiliate programs
       </a>
-      <a class="nav-link" href="#">
+      <a class="nav-link" href="dashboard.html#traffic">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         Analytics
       </a>
-      <a class="nav-link" href="#">
+      <a class="nav-link" href="dashboard.html#amazon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
         Amazon sales
+      </a>
+      <a class="nav-link" href="donna_ops_hub.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+        Ops Hub
       </a>
     </div>
 
@@ -442,6 +450,10 @@
       <div class="site-chip" onclick="filterBySite('altr', this)">
         <div class="site-dot" style="background:#fbbf24"></div>
         ArkLaTexRides
+      </div>
+      <div class="site-chip" onclick="filterBySite('tbd', this)">
+        <div class="site-dot" style="background:#7c7d8a"></div>
+        Unassigned
       </div>
     </div>
   </nav>
@@ -665,6 +677,320 @@ const PROGRAMS = [
     focus: 1,
     gmailLabel: 'AutomobileBrand%2FAffiliate+Welcome',
     notes: 'Paused while cleaning up AutomobileBrand bot traffic. Re-evaluate after traffic audit.'
+  },
+
+  /* ── Awin merchant programs — pulled live from Awin account "That Computer Girl" (ID 2632196) on 2026-07-05.
+     All show $0 earnings / 0 clicks so far (newly joined). Site assignment intentionally left as
+     'tbd' — review actual products on each merchant before placing on a site. ── */
+  {
+    id: 7,
+    name: 'mooncool',
+    network: 'Awin',
+    icon: 'Mc',
+    iconBg: '#0a1f1f',
+    iconColor: '#2dd4a0',
+    status: 'active',
+    sites: ['tbd'],
+    earnings: 0,
+    clicks: 0,
+    conversions: 0,
+    ctr: 0,
+    commissionRate: 'See Awin dashboard',
+    cookie: 'See Awin dashboard',
+    payThreshold: 'See Awin dashboard',
+    loginUrl: 'https://ui.awin.com/awin/affiliate/2632196/navigation/merchants',
+    paymentDate: 'Varies',
+    focus: 3,
+    gmailLabel: '',
+    notes: 'Awin network. EPC $0.80 · Conv 2.51% · Approval 58.67%. Live since 2025-08-11. Site not yet assigned — review products to decide placement.'
+  },
+  {
+    id: 8,
+    name: 'Poster Master US',
+    network: 'Awin',
+    icon: 'PM',
+    iconBg: '#1a140a',
+    iconColor: '#e8a830',
+    status: 'active',
+    sites: ['tbd'],
+    earnings: 0,
+    clicks: 0,
+    conversions: 0,
+    ctr: 0,
+    commissionRate: 'See Awin dashboard',
+    cookie: 'See Awin dashboard',
+    payThreshold: 'See Awin dashboard',
+    loginUrl: 'https://ui.awin.com/awin/affiliate/2632196/navigation/merchants',
+    paymentDate: 'Varies',
+    focus: 3,
+    gmailLabel: '',
+    notes: 'Awin network. EPC $0.05 · Conv 1.34% · Approval 95.83%. Live since 2025-11-24. Site not yet assigned — review products to decide placement.'
+  },
+  {
+    id: 9,
+    name: 'Oedro (US)',
+    network: 'Awin',
+    icon: 'Oe',
+    iconBg: '#1a0f0a',
+    iconColor: '#f07060',
+    status: 'active',
+    sites: ['tbd'],
+    earnings: 0,
+    clicks: 0,
+    conversions: 0,
+    ctr: 0,
+    commissionRate: 'See Awin dashboard',
+    cookie: 'See Awin dashboard',
+    payThreshold: 'See Awin dashboard',
+    loginUrl: 'https://ui.awin.com/awin/affiliate/2632196/navigation/merchants',
+    paymentDate: 'Varies',
+    focus: 3,
+    gmailLabel: '',
+    notes: 'Awin network. EPC $0.14 · Conv 0.73% · Approval 94.09%. Your longest-running Awin program (live since 2022-03-30). Site not yet assigned — auto-parts/accessories brand, likely fits AutomobileBrand but confirm before placing.'
+  },
+  {
+    id: 10,
+    name: 'Promeed',
+    network: 'Awin',
+    icon: 'Pr',
+    iconBg: '#0a1220',
+    iconColor: '#60a5fa',
+    status: 'active',
+    sites: ['tbd'],
+    earnings: 0,
+    clicks: 0,
+    conversions: 0,
+    ctr: 0,
+    commissionRate: 'See Awin dashboard',
+    cookie: 'See Awin dashboard',
+    payThreshold: 'See Awin dashboard',
+    loginUrl: 'https://ui.awin.com/awin/affiliate/2632196/navigation/merchants',
+    paymentDate: 'Varies',
+    focus: 3,
+    gmailLabel: '',
+    notes: 'Awin network. EPC $0.75 · Conv 7.01% · Approval 95.65%. Live since 2025-08-03. Site not yet assigned — review products to decide placement.'
+  },
+  {
+    id: 11,
+    name: 'ShadowGPS',
+    network: 'Awin',
+    icon: 'SG',
+    iconBg: '#14101f',
+    iconColor: '#c084fc',
+    status: 'active',
+    sites: ['tbd'],
+    earnings: 0,
+    clicks: 0,
+    conversions: 0,
+    ctr: 0,
+    commissionRate: 'See Awin dashboard',
+    cookie: 'See Awin dashboard',
+    payThreshold: 'See Awin dashboard',
+    loginUrl: 'https://ui.awin.com/awin/affiliate/2632196/navigation/merchants',
+    paymentDate: 'Varies',
+    focus: 3,
+    gmailLabel: '',
+    notes: 'Awin network. EPC $0.40 · Conv 10.10% · Approval 100%. Live since 2025-12-10. GPS tracking brand — could fit AutomobileBrand or ThatComputerGirl, review products to decide. Site not yet assigned.'
+  },
+  {
+    id: 12,
+    name: 'Guta',
+    network: 'Awin',
+    icon: 'Gu',
+    iconBg: '#0f1a14',
+    iconColor: '#86efac',
+    status: 'active',
+    sites: ['tbd'],
+    earnings: 0,
+    clicks: 0,
+    conversions: 0,
+    ctr: 0,
+    commissionRate: 'See Awin dashboard',
+    cookie: 'See Awin dashboard',
+    payThreshold: 'See Awin dashboard',
+    loginUrl: 'https://ui.awin.com/awin/affiliate/2632196/navigation/merchants',
+    paymentDate: 'Varies',
+    focus: 3,
+    gmailLabel: '',
+    notes: 'Awin network. EPC $0.58 · Conv 5.20% · Approval 100%. Live since 2025-07-28. Site not yet assigned — review products to decide placement.'
+  },
+  {
+    id: 13,
+    name: 'King Koil',
+    network: 'Awin',
+    icon: 'KK',
+    iconBg: '#1f140a',
+    iconColor: '#fbbf24',
+    status: 'active',
+    sites: ['tbd'],
+    earnings: 0,
+    clicks: 0,
+    conversions: 0,
+    ctr: 0,
+    commissionRate: 'See Awin dashboard',
+    cookie: 'See Awin dashboard',
+    payThreshold: 'See Awin dashboard',
+    loginUrl: 'https://ui.awin.com/awin/affiliate/2632196/navigation/merchants',
+    paymentDate: 'Varies',
+    focus: 3,
+    gmailLabel: '',
+    notes: 'Awin network. EPC $0.97 · Conv 8.23% · Approval 98.17%. Live since 2025-05-05. Mattress/bedding brand — doesn\'t obviously match your 4 sites, review before keeping. Site not yet assigned.'
+  },
+  {
+    id: 14,
+    name: 'Nexbie',
+    network: 'Awin',
+    icon: 'Nx',
+    iconBg: '#101418',
+    iconColor: '#9ca3af',
+    status: 'active',
+    sites: ['tbd'],
+    earnings: 0,
+    clicks: 0,
+    conversions: 0,
+    ctr: 0,
+    commissionRate: 'See Awin dashboard',
+    cookie: 'See Awin dashboard',
+    payThreshold: 'See Awin dashboard',
+    loginUrl: 'https://ui.awin.com/awin/affiliate/2632196/navigation/merchants',
+    paymentDate: 'Varies',
+    focus: 2,
+    gmailLabel: '',
+    notes: 'Awin network. Just joined (live since 2026-05-13) — no performance data yet. Site not yet assigned.'
+  },
+  {
+    id: 15,
+    name: 'Celsius Herbs',
+    network: 'Awin',
+    icon: 'CH',
+    iconBg: '#0a1a10',
+    iconColor: '#4ade80',
+    status: 'active',
+    sites: ['tbd'],
+    earnings: 0,
+    clicks: 0,
+    conversions: 0,
+    ctr: 0,
+    commissionRate: 'See Awin dashboard',
+    cookie: 'See Awin dashboard',
+    payThreshold: 'See Awin dashboard',
+    loginUrl: 'https://ui.awin.com/awin/affiliate/2632196/navigation/merchants',
+    paymentDate: 'Varies',
+    focus: 2,
+    gmailLabel: '',
+    notes: 'Awin network. Just joined (live since 2026-05-24) — no performance data yet. Herbal supplement brand doesn\'t obviously match your 4 current sites — worth reviewing whether to keep. Site not yet assigned.'
+  },
+  {
+    id: 16,
+    name: 'PANDA GOGO LIMITED',
+    network: 'Awin',
+    icon: 'PG',
+    iconBg: '#160a1a',
+    iconColor: '#e879f9',
+    status: 'active',
+    sites: ['tbd'],
+    earnings: 0,
+    clicks: 0,
+    conversions: 0,
+    ctr: 0,
+    commissionRate: 'See Awin dashboard',
+    cookie: 'See Awin dashboard',
+    payThreshold: 'See Awin dashboard',
+    loginUrl: 'https://ui.awin.com/awin/affiliate/2632196/navigation/merchants',
+    paymentDate: 'Varies',
+    focus: 3,
+    gmailLabel: '',
+    notes: 'Awin network. EPC $0.47 · Conv 1.58% · Approval 68.42%. Live since 2025-07-29. Site not yet assigned — review products to decide placement.'
+  },
+  {
+    id: 17,
+    name: 'Zlike Hair',
+    network: 'Awin',
+    icon: 'ZH',
+    iconBg: '#1a0a14',
+    iconColor: '#f472b6',
+    status: 'active',
+    sites: ['tbd'],
+    earnings: 0,
+    clicks: 0,
+    conversions: 0,
+    ctr: 0,
+    commissionRate: 'See Awin dashboard',
+    cookie: 'See Awin dashboard',
+    payThreshold: 'See Awin dashboard',
+    loginUrl: 'https://ui.awin.com/awin/affiliate/2632196/navigation/merchants',
+    paymentDate: 'Varies',
+    focus: 3,
+    gmailLabel: '',
+    notes: 'Awin network. EPC $0.49 · Conv 1.92% · Approval 33.40% (low approval rate, worth monitoring). Live since 2025-07-14. Hair extensions/wigs brand — likely fits JoeysHairSalon but confirm before placing. Site not yet assigned.'
+  },
+  {
+    id: 18,
+    name: 'MISSHA US',
+    network: 'Awin',
+    icon: 'MI',
+    iconBg: '#1a0a0f',
+    iconColor: '#fb7185',
+    status: 'active',
+    sites: ['tbd'],
+    earnings: 0,
+    clicks: 0,
+    conversions: 0,
+    ctr: 0,
+    commissionRate: 'See Awin dashboard',
+    cookie: 'See Awin dashboard',
+    payThreshold: 'See Awin dashboard',
+    loginUrl: 'https://ui.awin.com/awin/affiliate/2632196/navigation/merchants',
+    paymentDate: 'Varies',
+    focus: 4,
+    gmailLabel: '',
+    notes: 'Awin network. EPC $0.89 · Conv 12.37% · Approval 99.61% — your best-converting Awin program so far. Live since 2025-08-20. Korean skincare/cosmetics brand — likely fits JoeysHairSalon but confirm before placing. Site not yet assigned.'
+  },
+
+  /* ── PartnerStack programs — pulled live on 2026-07-05. ── */
+  {
+    id: 19,
+    name: 'Surfer',
+    network: 'PartnerStack',
+    icon: 'Su',
+    iconBg: '#0a151f',
+    iconColor: '#38bdf8',
+    status: 'active',
+    sites: ['tbd'],
+    earnings: 0,
+    clicks: 0,
+    conversions: 0,
+    ctr: 0,
+    commissionRate: 'See PartnerStack dashboard',
+    cookie: 'See PartnerStack dashboard',
+    payThreshold: 'See PartnerStack dashboard',
+    loginUrl: 'https://dash.partnerstack.com/home',
+    paymentDate: 'Varies',
+    focus: 3,
+    gmailLabel: '',
+    notes: 'PartnerStack network. SEO/content optimization tool. 0 clicks, 0 signups so far. Likely fits ThatComputerGirl (SEO/content niche) but confirm before placing. Site not yet assigned.'
+  },
+  {
+    id: 20,
+    name: 'Kit (formerly ConvertKit)',
+    network: 'PartnerStack',
+    icon: 'Kt',
+    iconBg: '#0f1a1a',
+    iconColor: '#2dd4a0',
+    status: 'active',
+    sites: ['tbd'],
+    earnings: 0,
+    clicks: 60,
+    conversions: 0,
+    ctr: 0,
+    commissionRate: 'See PartnerStack dashboard',
+    cookie: 'See PartnerStack dashboard',
+    payThreshold: 'See PartnerStack dashboard',
+    loginUrl: 'https://dash.partnerstack.com/home',
+    paymentDate: 'Varies',
+    focus: 3,
+    gmailLabel: '',
+    notes: 'PartnerStack network. Email/newsletter tool. 60 clicks so far, 0 signups. Likely fits ThatComputerGirl (email tool content) but confirm before placing. Site not yet assigned.'
   }
 ];
 
@@ -672,11 +998,12 @@ const SITE_NAMES = {
   tcg: 'ThatComputerGirl',
   ab: 'AutomobileBrand',
   jhs: 'JoeysHairSalon',
-  altr: 'ArkLaTexRides'
+  altr: 'ArkLaTexRides',
+  tbd: 'Unassigned'
 };
 
 const SITE_COLORS = {
-  tcg: '#60a5fa', ab: '#2dd4a0', jhs: '#f07060', altr: '#fbbf24'
+  tcg: '#60a5fa', ab: '#2dd4a0', jhs: '#f07060', altr: '#fbbf24', tbd: '#7c7d8a'
 };
 
 /* ─── STATE ─── */

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home · Donna's Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0f1117;
+    --bg2:       #161820;
+    --bg3:       #1e2029;
+    --bg4:       #252731;
+    --border:    rgba(255,255,255,0.07);
+    --border2:   rgba(255,255,255,0.13);
+    --text:      #e8e9f0;
+    --text2:     #9a9baa;
+    --text3:     #5c5d6e;
+    --gold:      #e8a830;
+    --gold-dim:  #7a5518;
+    --gold-bg:   rgba(232,168,48,0.08);
+    --teal:      #2dd4a0;
+    --teal-bg:   rgba(45,212,160,0.08);
+    --coral:     #f07060;
+    --coral-bg:  rgba(240,112,96,0.08);
+    --blue:      #60a5fa;
+    --blue-bg:   rgba(96,165,250,0.08);
+    --amber:     #fbbf24;
+    --amber-bg:  rgba(251,191,36,0.08);
+    --purple:    #c084fc;
+    --purple-bg: rgba(192,132,252,0.08);
+    --radius-sm: 6px;
+    --radius:    10px;
+    --radius-lg: 16px;
+  }
+
+  html { font-size: 15px; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  .shell { display: flex; min-height: 100vh; }
+
+  /* ── Sidebar (shared look across the suite) ── */
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar-logo { padding: 0 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+  .sidebar-logo .wordmark { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--text); line-height: 1.3; }
+  .sidebar-logo .wordmark span { color: var(--gold); }
+  .sidebar-logo .sub { font-size: 11px; color: var(--text3); margin-top: 2px; letter-spacing: 0.05em; }
+
+  .nav-label { font-size: 10px; letter-spacing: 0.1em; color: var(--text3); padding: 0 20px; margin-bottom: 6px; text-transform: uppercase; }
+  .nav-link {
+    display: flex; align-items: center; gap: 9px;
+    padding: 9px 20px; font-size: 13px; color: var(--text2);
+    text-decoration: none; border-left: 2px solid transparent;
+    transition: all 0.15s; cursor: pointer;
+  }
+  .nav-link svg { width: 15px; height: 15px; opacity: 0.6; flex-shrink: 0; }
+  .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+  .nav-link.active { color: var(--gold); border-left-color: var(--gold); background: var(--gold-bg); }
+  .nav-link.active svg { opacity: 1; }
+  .sidebar-section { margin-bottom: 24px; }
+
+  .sidebar-foot { margin-top: auto; padding: 16px 20px 0; border-top: 1px solid var(--border); }
+  .sidebar-foot p { font-size: 11px; color: var(--text3); line-height: 1.5; }
+
+  /* ── Main ── */
+  .main { flex: 1; min-width: 0; }
+  .topbar {
+    padding: 28px 32px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+  }
+  .topbar h1 { font-family: 'DM Serif Display', serif; font-size: 28px; font-weight: 400; }
+  .topbar h1 em { font-style: italic; color: var(--gold); }
+  .topbar p { font-size: 13px; color: var(--text3); margin-top: 6px; }
+
+  .content { padding: 28px 32px; }
+
+  .section-title {
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 14px; font-weight: 500;
+  }
+
+  /* ── Quick facts ── */
+  .facts-row {
+    display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px;
+    margin-bottom: 32px;
+  }
+  .fact-card {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+  .fact-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+  .fact-value { font-size: 26px; font-weight: 300; }
+  .fact-value.gold { color: var(--gold); }
+  .fact-sub { font-size: 11px; color: var(--text3); margin-top: 6px; }
+  .fact-sub.warn { color: var(--amber); }
+
+  /* ── Tool cards (the 3 pages) ── */
+  .tool-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; margin-bottom: 36px; }
+  .tool-card {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 24px; text-decoration: none; color: inherit; display: block;
+    transition: all 0.15s;
+  }
+  .tool-card:hover { border-color: var(--gold-dim); background: var(--bg4); transform: translateY(-2px); }
+  .tool-icon {
+    width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+  }
+  .tool-icon svg { width: 22px; height: 22px; }
+  .tool-title { font-family: 'DM Serif Display', serif; font-size: 19px; margin-bottom: 8px; }
+  .tool-desc { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 14px; }
+  .tool-meta { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 6px; }
+  .tool-meta .dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  /* ── Sites grid ── */
+  .sites-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; margin-bottom: 32px; }
+  .site-card {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 18px 20px; text-decoration: none; color: inherit; display: block; transition: all 0.15s;
+  }
+  .site-card:hover { border-color: var(--border2); background: var(--bg4); }
+  .site-card-hd { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .site-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .site-name { font-size: 14px; font-weight: 500; }
+  .site-niche { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+  .site-tag { font-size: 10px; color: var(--text3); }
+
+  /* ── Callout ── */
+  .callout {
+    background: var(--amber-bg); border: 1px solid rgba(251,191,36,0.25); border-radius: var(--radius);
+    padding: 16px 20px; display: flex; gap: 14px; align-items: flex-start; margin-bottom: 8px;
+  }
+  .callout svg { width: 18px; height: 18px; color: var(--amber); flex-shrink: 0; margin-top: 1px; }
+  .callout-title { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+  .callout-body { font-size: 12px; color: var(--text2); line-height: 1.6; }
+  .callout-body a { color: var(--gold); }
+
+  @media (max-width: 1000px) {
+    .sidebar { display: none; }
+    .facts-row { grid-template-columns: 1fr 1fr; }
+    .tool-grid { grid-template-columns: 1fr; }
+    .sites-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="wordmark">Donna's<br><span>Dashboard</span></div>
+      <div class="sub">Site portfolio · 2026</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="nav-label">Navigation</div>
+      <a class="nav-link active" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Home
+      </a>
+      <a class="nav-link" href="dashboard.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Sites overview
+      </a>
+      <a class="nav-link" href="affiliates.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        Affiliate programs
+      </a>
+      <a class="nav-link" href="dashboard.html#traffic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Analytics
+      </a>
+      <a class="nav-link" href="dashboard.html#amazon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        Amazon sales
+      </a>
+      <a class="nav-link" href="donna_ops_hub.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+        Ops Hub
+      </a>
+    </div>
+
+    <div class="sidebar-foot">
+      <p>4 sites · 20 affiliate programs<br>across Awin, PartnerStack &amp; direct networks</p>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div class="main">
+
+    <div class="topbar">
+      <h1>Welcome back, <em>Donna</em></h1>
+      <p id="today-label">Site portfolio home</p>
+    </div>
+
+    <div class="content">
+
+      <div class="section-title">Portfolio at a glance</div>
+      <div class="facts-row">
+        <div class="fact-card">
+          <div class="fact-label">Sites</div>
+          <div class="fact-value">4</div>
+          <div class="fact-sub">All live</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-label">Affiliate programs</div>
+          <div class="fact-value gold">20</div>
+          <div class="fact-sub">Amazon, Awin, PartnerStack, Ezoic, ShareASale, CJ, Impact</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-label">Networks</div>
+          <div class="fact-value">7</div>
+          <div class="fact-sub">Amazon · Awin · PartnerStack · Ezoic · ShareASale · CJ · Impact</div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-label">Need site assignment</div>
+          <div class="fact-value">14</div>
+          <div class="fact-sub warn">12 Awin + 2 PartnerStack programs — review on Affiliate Programs page</div>
+        </div>
+      </div>
+
+      <div class="section-title">Your tools</div>
+      <div class="tool-grid">
+        <a class="tool-card" href="dashboard.html">
+          <div class="tool-icon" style="background:var(--blue-bg)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          </div>
+          <div class="tool-title">Sites Overview</div>
+          <div class="tool-desc">GA4 traffic, Google Search Console rankings, and Amazon affiliate CSV import across all 4 sites.</div>
+          <div class="tool-meta"><span class="dot" style="background:var(--blue)"></span>dashboard.html</div>
+        </a>
+        <a class="tool-card" href="affiliates.html">
+          <div class="tool-icon" style="background:var(--gold-bg)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+          </div>
+          <div class="tool-title">Affiliate Programs</div>
+          <div class="tool-desc">All 20 joined programs across every network, with earnings, CTR, and which site each is implemented on.</div>
+          <div class="tool-meta"><span class="dot" style="background:var(--gold)"></span>affiliates.html</div>
+        </a>
+        <a class="tool-card" href="donna_ops_hub.html">
+          <div class="tool-icon" style="background:var(--coral-bg)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          </div>
+          <div class="tool-title">Donna Digital HQ</div>
+          <div class="tool-desc">Content queue, AI draft helper, per-site notes and action items. Syncs with Notion.</div>
+          <div class="tool-meta"><span class="dot" style="background:var(--coral)"></span>donna_ops_hub.html</div>
+        </a>
+      </div>
+
+      <div class="section-title">Your sites</div>
+      <div class="sites-grid">
+        <a class="site-card" href="dashboard.html">
+          <div class="site-card-hd"><div class="site-dot" style="background:#60a5fa"></div><div class="site-name">ThatComputerGirl</div></div>
+          <div class="site-niche">Tech · SEO · Web dev content</div>
+          <div class="site-tag">#1 revenue site</div>
+        </a>
+        <a class="site-card" href="dashboard.html">
+          <div class="site-card-hd"><div class="site-dot" style="background:#f07060"></div><div class="site-name">AutomobileBrand</div></div>
+          <div class="site-niche">Automotive · Dash cams · Accessories</div>
+          <div class="site-tag">Pivoting away from bot traffic niche</div>
+        </a>
+        <a class="site-card" href="dashboard.html">
+          <div class="site-card-hd"><div class="site-dot" style="background:#2dd4a0"></div><div class="site-name">JoeysHairSalon</div></div>
+          <div class="site-niche">Beauty · Hair care</div>
+          <div class="site-tag">Affiliate links need correcting</div>
+        </a>
+        <a class="site-card" href="dashboard.html">
+          <div class="site-card-hd"><div class="site-dot" style="background:#c084fc"></div><div class="site-name">ArkLaTexRides</div></div>
+          <div class="site-niche">Regional transport · Auto</div>
+          <div class="site-tag">GA4 data flow needs verification</div>
+        </a>
+      </div>
+
+      <div class="callout">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div>
+          <div class="callout-title">14 affiliate programs still need a site assignment</div>
+          <div class="callout-body">12 newly-joined Awin programs and 2 PartnerStack programs (Surfer, Kit) don't have a site yet — they need a look at the actual products before placing them. Head to <a href="affiliates.html">Affiliate Programs</a> and filter by "Unassigned" to work through them.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('today-label').textContent =
+    new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) + ' · Site portfolio home';
+</script>
+</body>
+</html>

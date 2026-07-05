@@ -5,25 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Analytics Dashboard</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg1:#ffffff; --bg2:#f5f5f3; --bg3:#efefed;
-    --t1:#1a1a1a; --t2:#6b6b68; --t3:#9b9b97;
-    --border:rgba(0,0,0,0.1);
-    --font:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --bg1:#1e2029; --bg2:#252731; --bg3:#0f1117;
+    --t1:#e8e9f0; --t2:#9a9baa; --t3:#5c5d6e;
+    --border:rgba(255,255,255,0.08);
+    --font:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
     --mono:'SF Mono','Fira Code',monospace;
     --r-md:8px; --r-lg:12px;
+    --gold:#e8a830; --gold-bg:rgba(232,168,48,0.08); --gold-dim:#7a5518;
     --orange:#FF9900;
-    --green:#639922; --green-bg:#EAF3DE; --green-t:#3B6D11;
-    --amber-bg:#FAEEDA; --amber-t:#854F0B;
-    --teal:#1D9E75; --blue:#185FA5; --purple:#8B5CF6;
-  }
-  @media(prefers-color-scheme:dark){
-    :root{
-      --bg1:#1c1c1a; --bg2:#252523; --bg3:#2c2c2a;
-      --t1:#f0f0ee; --t2:#9b9b97; --t3:#6b6b68;
-      --border:rgba(255,255,255,0.08);
-    }
+    --green:#2dd4a0; --green-bg:rgba(45,212,160,0.12); --green-t:#2dd4a0;
+    --amber-bg:rgba(251,191,36,0.12); --amber-t:#fbbf24;
+    --teal:#2dd4a0; --blue:#60a5fa; --purple:#c084fc; --coral:#f07060;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:var(--font);background:var(--bg3);color:var(--t1);min-height:100vh;}
@@ -32,13 +28,16 @@
   /* Sidebar */
   .sidebar{width:210px;flex-shrink:0;background:var(--bg1);border-right:.5px solid var(--border);display:flex;flex-direction:column;padding:20px 0;overflow-y:auto;}
   .logo{padding:0 16px 20px;border-bottom:.5px solid var(--border);margin-bottom:8px;}
-  .logo span{font-size:14px;font-weight:500;}
-  .logo small{display:block;font-size:11px;color:var(--t3);margin-top:2px;}
+  .logo span{font-family:'DM Serif Display',serif;font-size:15px;font-weight:400;}
+  .logo small{display:block;font-size:11px;color:var(--t3);margin-top:2px;letter-spacing:.05em;}
   .nav-section{padding:8px 0;}
   .nav-label{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;padding:0 16px 6px;}
   .nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:13px;color:var(--t2);cursor:pointer;border-left:2px solid transparent;transition:all .15s;user-select:none;}
   .nav-item:hover{color:var(--t1);background:var(--bg2);}
-  .nav-item.active{color:var(--t1);border-left-color:var(--t1);background:var(--bg2);font-weight:500;}
+  .nav-item.active{color:var(--gold);border-left-color:var(--gold);background:var(--gold-bg);font-weight:500;}
+  .nav-item-ext{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:13px;color:var(--t2);cursor:pointer;border-left:2px solid transparent;transition:all .15s;user-select:none;text-decoration:none;}
+  .nav-item-ext:hover{color:var(--t1);background:var(--bg2);}
+  .nav-item-ext i{font-size:15px;flex-shrink:0;}
   .nav-item i{font-size:15px;flex-shrink:0;}
   .nav-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;}
   .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
@@ -57,8 +56,8 @@
   /* Buttons */
   .btn{font-size:12px;color:var(--t2);background:transparent;border:.5px solid var(--border);border-radius:var(--r-md);padding:5px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:var(--font);transition:all .12s;}
   .btn:hover{background:var(--bg2);color:var(--t1);}
-  .btn-primary{background:var(--t1);color:var(--bg1);border-color:var(--t1);}
-  .btn-primary:hover{opacity:.85;color:var(--bg1);}
+  .btn-primary{background:var(--gold);color:#0f1117;border-color:var(--gold);font-weight:500;}
+  .btn-primary:hover{opacity:.85;color:#0f1117;}
   .btn-orange{background:var(--orange);color:#111;border-color:var(--orange);font-weight:500;}
   .btn-orange:hover{opacity:.88;color:#111;}
   .date-pill{font-size:12px;color:var(--t2);background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r-md);padding:5px 10px;display:flex;align-items:center;gap:5px;}
@@ -78,20 +77,20 @@
   .stat-value{font-size:22px;font-weight:500;line-height:1;margin-bottom:4px;}
   .stat-delta{font-size:11px;display:flex;align-items:center;gap:3px;}
   .delta-up{color:var(--green-t);}
-  .delta-down{color:#A32D2D;}
+  .delta-down{color:var(--coral);}
   .delta-neutral{color:var(--t3);}
   .sparkline{display:flex;align-items:flex-end;gap:2px;height:28px;margin-top:6px;}
   .spark-bar{flex:1;border-radius:2px 2px 0 0;background:var(--t3);opacity:.3;}
 
   /* Auth banner */
   .auth-banner{background:var(--bg1);border:.5px solid var(--border);border-radius:var(--r-lg);padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
-  .auth-banner.connected{border-color:#9FE1CB;background:#E1F5EE;}
+  .auth-banner.connected{border-color:rgba(45,212,160,0.35);background:rgba(45,212,160,0.10);}
   .auth-info{display:flex;align-items:center;gap:12px;}
   .auth-icon{width:36px;height:36px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-  .auth-icon.ok{background:#9FE1CB;}
+  .auth-icon.ok{background:rgba(45,212,160,0.20);}
   .auth-text strong{font-size:13px;font-weight:500;display:block;}
   .auth-text small{font-size:11px;color:var(--t2);}
-  .auth-banner.connected .auth-text small{color:#0F6E56;}
+  .auth-banner.connected .auth-text small{color:var(--teal);}
 
   /* Sites table */
   .sites-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;}
@@ -113,7 +112,7 @@
   .site-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
   .site-tab{font-size:11px;padding:5px 12px;border-radius:var(--r-md);border:.5px solid var(--border);cursor:pointer;color:var(--t2);background:transparent;font-family:var(--font);transition:all .12s;display:flex;align-items:center;gap:6px;}
   .site-tab:hover{background:var(--bg2);color:var(--t1);}
-  .site-tab.active{background:var(--t1);color:var(--bg1);border-color:var(--t1);font-weight:500;}
+  .site-tab.active{background:var(--gold);color:#0f1117;border-color:var(--gold);font-weight:500;}
   .site-tab .dot{width:6px;height:6px;}
   .pages-table{width:100%;border-collapse:collapse;font-size:12px;}
   .pages-table th{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;padding:0 12px 8px 0;text-align:left;border-bottom:.5px solid var(--border);}
@@ -139,7 +138,7 @@
   .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
   .chip{font-size:11px;background:var(--bg2);border:.5px solid var(--border);border-radius:20px;padding:3px 10px;display:flex;align-items:center;gap:5px;color:var(--t2);}
   .chip-x{cursor:pointer;font-size:12px;color:var(--t3);}
-  .chip-x:hover{color:#A32D2D;}
+  .chip-x:hover{color:var(--coral);}
   .filter-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
   .ftab{font-size:11px;padding:4px 10px;border-radius:var(--r-md);border:.5px solid var(--border);cursor:pointer;color:var(--t2);background:transparent;font-family:var(--font);transition:all .12s;}
   .ftab:hover{background:var(--bg2);color:var(--t1);}
@@ -170,6 +169,12 @@
 <!-- ── Sidebar ── -->
 <aside class="sidebar">
   <div class="logo"><span>My Dashboard</span><small>Analytics &amp; Affiliate</small></div>
+  <div class="nav-section">
+    <div class="nav-label">Hub</div>
+    <a class="nav-item-ext" href="index.html"><i class="ti ti-home"></i><span class="nav-name">Home</span></a>
+    <a class="nav-item-ext" href="affiliates.html"><i class="ti ti-affiliate"></i><span class="nav-name">Affiliate Programs</span></a>
+    <a class="nav-item-ext" href="donna_ops_hub.html"><i class="ti ti-clipboard-list"></i><span class="nav-name">Ops Hub</span></a>
+  </div>
   <div class="nav-section">
     <div class="nav-label">Overview</div>
     <div class="nav-item active" data-page="overview"><i class="ti ti-layout-dashboard"></i><span class="nav-name">Overview</span></div>
@@ -550,7 +555,14 @@ function showPage(id) {
   if(id === 'traffic' && accessToken && !trafficCache[activeSiteIdx]) loadTrafficPage();
   if(id === 'seo' && accessToken) loadGSC();
 }
-document.querySelectorAll('.nav-item').forEach(n => n.addEventListener('click', () => showPage(n.dataset.page)));
+document.querySelectorAll('.nav-item[data-page]').forEach(n => n.addEventListener('click', () => showPage(n.dataset.page)));
+
+// Allow deep-linking from other pages, e.g. dashboard.html#amazon
+(function(){
+  const validPages = ['overview','traffic','seo','amazon'];
+  const hash = (location.hash || '').replace('#','');
+  if (validPages.includes(hash)) showPage(hash);
+})();
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 const fmt    = n => (!n && n!==0) ? '—' : Math.round(n).toLocaleString();
@@ -581,7 +593,7 @@ function startAuth(){if(!tokenClient){alert('Still loading...');return;} tokenCl
 function onAuth() {
   const b=document.getElementById('auth-banner');
   b.className='auth-banner connected';
-  b.innerHTML=`<div class="auth-info"><div class="auth-icon ok"><i class="ti ti-check" style="font-size:16px;color:#0F6E56"></i></div><div class="auth-text"><strong>Google Analytics connected</strong><small id="ga-status">Fetching data...</small></div></div><button class="btn" onclick="startAuth()"><i class="ti ti-refresh" style="font-size:13px"></i> Re-auth</button>`;
+  b.innerHTML=`<div class="auth-info"><div class="auth-icon ok"><i class="ti ti-check" style="font-size:16px;color:#2dd4a0"></i></div><div class="auth-text"><strong>Google Analytics connected</strong><small id="ga-status">Fetching data...</small></div></div><button class="btn" onclick="startAuth()"><i class="ti ti-refresh" style="font-size:13px"></i> Re-auth</button>`;
   document.getElementById('auth-btn').style.display='none';
   loadGA();
 }
@@ -646,10 +658,10 @@ async function loadGA(){
 function drawTrafficChart(results){
   const el=document.getElementById('traffic-chart');
   const bars=[
-    {l:'AutomobileBrand',v:results[0]?.visitors||0,c:'#639922'},
-    {l:'JoeysHairSalon', v:results[1]?.visitors||0,c:'#1D9E75'},
-    {l:'ThatComputerGirl',v:results[2]?.visitors||0,c:'#185FA5'},
-    {l:'ArkLaTexRides',  v:results[3]?.visitors||0,c:'#8B5CF6'},
+    {l:'AutomobileBrand',v:results[0]?.visitors||0,c:'#f07060'},
+    {l:'JoeysHairSalon', v:results[1]?.visitors||0,c:'#2dd4a0'},
+    {l:'ThatComputerGirl',v:results[2]?.visitors||0,c:'#60a5fa'},
+    {l:'ArkLaTexRides',  v:results[3]?.visitors||0,c:'#c084fc'},
   ];
   const max=Math.max(...bars.map(b=>b.v),1);
   el.innerHTML=`<div style="width:100%;padding:10px 16px 8px;display:flex;align-items:flex-end;gap:14px;height:100%">${bars.map(b=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%"><div style="font-size:10px;color:var(--t3)">${fmt(b.v)}</div><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:${Math.max(4,Math.round((b.v/max)*100))}%;background:${b.c};border-radius:3px 3px 0 0;opacity:.75;min-height:4px"></div></div><div style="font-size:9px;color:var(--t3);text-align:center;line-height:1.3">${b.l}</div></div>`).join('')}</div>`;
@@ -728,7 +740,7 @@ function fmt2(n) { return (!n && n!==0) ? '—' : Math.round(n).toLocaleString()
 function renderGSCSiteCards(results) {
   const grid = document.getElementById('gsc-site-grid');
   if (!grid) return;
-  const colors = ['#639922','#1D9E75','#185FA5','#8B5CF6'];
+  const colors = ['#f07060','#2dd4a0','#60a5fa','#c084fc'];
   grid.innerHTML = PROPS.map((p, i) => {
     const r = results[i];
     return `<div class="amz-stat-card">
@@ -851,7 +863,7 @@ function renderTrafficPage(idx) {
     : '<tr><td colspan="5" style="text-align:center;color:var(--t3);padding:20px">No data for this site yet</td></tr>';
 
   // Traffic sources
-  const srcColors = ['var(--green)','var(--blue)','var(--orange)','var(--purple)','var(--teal)','#E85D4A','#C084FC','#94A3B8'];
+  const srcColors = ['var(--green)','var(--blue)','var(--orange)','var(--purple)','var(--teal)','#f07060','#C084FC','#94A3B8'];
   const srcRows = sourcesData.rows || [];
   const maxSrc = Math.max(...srcRows.map(r => parseInt(r.metricValues[0].value)), 1);
   const totalSrc = srcRows.reduce((a,r) => a + parseInt(r.metricValues[0].value), 0);
@@ -1051,7 +1063,7 @@ function renderAmz(){
   const el=document.getElementById('amz-overview-chart');
   const bars=Object.entries(TAG_MAP).map(([tag,info],i)=>{
     const rows=allRows.filter(r=>r.tid===tag);
-    return {l:info.name.replace('.com',''),v:sumRows(rows).earnings,c:['#639922','#8B5CF6','#185FA5','#1D9E75'][i]};
+    return {l:info.name.replace('.com',''),v:sumRows(rows).earnings,c:['#f07060','#c084fc','#60a5fa','#2dd4a0'][i]};
   });
   const max=Math.max(...bars.map(b=>b.v),0.01);
   el.innerHTML=`<div style="width:100%;padding:10px 16px 8px;display:flex;align-items:flex-end;gap:14px;height:100%">${bars.map(b=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%"><div style="font-size:10px;color:var(--t3)">${fmtM(b.v)}</div><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:${Math.max(b.v>0?4:0,Math.round((b.v/max)*100))}%;background:${b.c};border-radius:3px 3px 0 0;opacity:.75;min-height:${b.v>0?4:0}px"></div></div><div style="font-size:9px;color:var(--t3);text-align:center;line-height:1.3">${b.l}</div></div>`).join('')}</div>`;
